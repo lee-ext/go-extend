@@ -4,8 +4,8 @@ type Actor struct {
 	ch chan func()
 }
 
-func Actor_(len_ int, deferFn func(any)) Actor {
-	actor := Actor{make(chan func(), len_)}
+func Actor_(cap int, deferFn func(any)) Actor {
+	actor := Actor{make(chan func(), cap)}
 	go actor.receive(deferFn)
 	return actor
 }
