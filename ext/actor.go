@@ -13,8 +13,10 @@ func Actor_(len_ int, deferFn func(any)) Actor {
 func (a Actor) receive(deferFn func(any)) {
 	go func() {
 		defer func() {
-			deferFn(recover())
-			go a.receive(deferFn)
+			if r := recover(); r != nil {
+				deferFn(recover())
+				go a.receive(deferFn)
+			}
 		}()
 		for fn := range a.ch {
 			fn()
