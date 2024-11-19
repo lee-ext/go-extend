@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// Launch a new function, deferFn used for recover processing,
+// panic does not cause a crash
 func Launch(fn func(), deferFn func(any)) {
 	go func() {
 		defer func() {
@@ -15,6 +17,7 @@ func Launch(fn func(), deferFn func(any)) {
 	}()
 }
 
+// LaunchSturdy same of Launch, but this will wake itself up
 func LaunchSturdy(fn func(), deferFn func(any)) {
 	go func() {
 		defer func() {
