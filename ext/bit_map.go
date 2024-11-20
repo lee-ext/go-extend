@@ -140,39 +140,3 @@ func (bm *Bytes2BitMap) Get(index int) uint8 {
 func (bm *Bytes2BitMap) Len() int {
 	return bm.bm.Len() / 2
 }
-
-type Bytes4BitMap struct {
-	bm BytesBitMap
-}
-
-func Bytes4BitMap_(value []byte) Bytes2BitMap {
-	return Bytes2BitMap{BytesBitMap{value}}
-}
-
-func (bm *Bytes4BitMap) Value() []byte {
-	return bm.bm.value
-}
-
-func (bm *Bytes4BitMap) Set(index int, v uint8) {
-	if v < 1<<4 {
-		index = index * 4
-		for i := range 4 {
-			bm.bm.Set(index+i, (v>>i)&1 == 1)
-		}
-	}
-}
-
-func (bm *Bytes4BitMap) Get(index int) uint8 {
-	v := 0
-	index = index * 2
-	for i := range 2 {
-		if bm.bm.Get(index + i) {
-			v += 1 << i
-		}
-	}
-	return uint8(v)
-}
-
-func (bm *Bytes4BitMap) Len() int {
-	return bm.bm.Len() / 4
-}
