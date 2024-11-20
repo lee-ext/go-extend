@@ -1,6 +1,6 @@
 package ext
 
-type Foreach[E any] interface {
+type Iterator[E any] interface {
 	Foreach(func(E))
 	Len() int
 	Empty() bool
@@ -11,7 +11,7 @@ type _AppendSelf[E, ES any] interface {
 }
 
 // Map 将Foreach[T]转成Vec[R]
-func Map[T, R any, TS Foreach[T]](ts TS, fn func(T) R) Vec[R] {
+func Map[T, R any, TS Iterator[T]](ts TS, fn func(T) R) Vec[R] {
 	rs := Vec_[R](ts.Len())
 	ts.Foreach(func(t T) {
 		rs.Append(fn(t))
@@ -20,7 +20,7 @@ func Map[T, R any, TS Foreach[T]](ts TS, fn func(T) R) Vec[R] {
 }
 
 // IntactTo 同Map函数但支持更多类型
-func IntactTo[T any, TS Foreach[T], RS _AppendSelf[T, RS]](
+func IntactTo[T any, TS Iterator[T], RS _AppendSelf[T, RS]](
 	ts TS, toFn func(int) RS) RS {
 	rs := toFn(ts.Len())
 	ts.Foreach(func(t T) {
@@ -30,7 +30,7 @@ func IntactTo[T any, TS Foreach[T], RS _AppendSelf[T, RS]](
 }
 
 // MapTo 同Map函数但支持更多类型
-func MapTo[T, R any, TS Foreach[T], RS _AppendSelf[R, RS]](
+func MapTo[T, R any, TS Iterator[T], RS _AppendSelf[R, RS]](
 	ts TS, fn func(T) R, toFn func(int) RS) RS {
 	rs := toFn(ts.Len())
 	ts.Foreach(func(t T) {
@@ -39,8 +39,8 @@ func MapTo[T, R any, TS Foreach[T], RS _AppendSelf[R, RS]](
 	return rs
 }
 
-// Flatten 将Foreach[Foreach[T]]平铺成Vec[E]
-func Flatten[T any, TS Foreach[T], TG Foreach[TS]](tg TG) Vec[T] {
+// Flatten 将Foreach[Iterator[T]]平铺成Vec[E]
+func Flatten[T any, TS Iterator[T], TG Iterator[TS]](tg TG) Vec[T] {
 	rs := Vec_[T](Reduce(tg, 0,
 		func(l int, r TS) int {
 			return l + r.Len()
@@ -52,7 +52,7 @@ func Flatten[T any, TS Foreach[T], TG Foreach[TS]](tg TG) Vec[T] {
 }
 
 // FlattenTo 同 Flatten函数但支持更多类型
-func FlattenTo[T any, TS Foreach[T], TG Foreach[TS], FlatTS _AppendSelf[T, FlatTS]](
+func FlattenTo[T any, TS Iterator[T], TG Iterator[TS], FlatTS _AppendSelf[T, FlatTS]](
 	tg TG, toFn func(int) FlatTS) FlatTS {
 	rs := toFn(Reduce(tg, 0,
 		func(l int, r TS) int {
@@ -67,18 +67,18 @@ func FlattenTo[T any, TS Foreach[T], TG Foreach[TS], FlatTS _AppendSelf[T, FlatT
 }
 
 // FlatMap 将Foreach[T]平铺成Vec[R]
-func FlatMap[T, R any, TS Foreach[T], RS Foreach[R]](ts TS, fn func(T) RS) Vec[R] {
+func FlatMap[T, R any, TS Iterator[T], RS Iterator[R]](ts TS, fn func(T) RS) Vec[R] {
 	return Flatten[R](Map(ts, fn))
 }
 
 // FlatMapTo 同 FlatMap 函数但支持更多类型
-func FlatMapTo[T, R any, TS Foreach[T], RS Foreach[R], FlatRS _AppendSelf[R, FlatRS]](
+func FlatMapTo[T, R any, TS Iterator[T], RS Iterator[R], FlatRS _AppendSelf[R, FlatRS]](
 	ts TS, fn func(T) RS, toFn func(int) FlatRS) FlatRS {
 	return FlattenTo(Map(ts, fn), toFn)
 }
 
 // Filter 过滤Foreach[T]中不需要的元素
-func Filter[T any, TS Foreach[T]](ts TS, fn func(T) bool) Vec[T] {
+func Filter[T any, TS Iterator[T]](ts TS, fn func(T) bool) Vec[T] {
 	rs := Vec_[T](filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
 		if fn(t) {
@@ -89,7 +89,7 @@ func Filter[T any, TS Foreach[T]](ts TS, fn func(T) bool) Vec[T] {
 }
 
 // FilterTo 同 Filter 函数但支持更多类型
-func FilterTo[T any, TS Foreach[T], RS _AppendSelf[T, RS]](
+func FilterTo[T any, TS Iterator[T], RS _AppendSelf[T, RS]](
 	ts TS, fn func(T) bool, toFn func(int) RS) RS {
 	rs := toFn(filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
@@ -101,7 +101,7 @@ func FilterTo[T any, TS Foreach[T], RS _AppendSelf[T, RS]](
 }
 
 // FilterMap 将Vec[E]转成Vec[RangeTo] 并过滤不需要的元素
-func FilterMap[T, R any, TS Foreach[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
+func FilterMap[T, R any, TS Iterator[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
 	rs := Vec_[R](filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
 		if r, b := fn(t).D(); b {
@@ -112,7 +112,7 @@ func FilterMap[T, R any, TS Foreach[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
 }
 
 // FilterMapTo 同 FilterMap 函数但支持更多类型
-func FilterMapTo[T, R any, TS Foreach[T], RS _AppendSelf[R, RS]](
+func FilterMapTo[T, R any, TS Iterator[T], RS _AppendSelf[R, RS]](
 	ts TS, fn func(T) Opt[R], toFn func(int) RS) RS {
 	rs := toFn(filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
@@ -124,7 +124,7 @@ func FilterMapTo[T, R any, TS Foreach[T], RS _AppendSelf[R, RS]](
 }
 
 // Reduce 对Vec[E]做合并操作 需要一个种子
-func Reduce[T, R any, TS Foreach[T]](ts TS, seed R, fn func(R, T) R) R {
+func Reduce[T, R any, TS Iterator[T]](ts TS, seed R, fn func(R, T) R) R {
 	ts.Foreach(func(t T) {
 		seed = fn(seed, t)
 	})
@@ -132,7 +132,7 @@ func Reduce[T, R any, TS Foreach[T]](ts TS, seed R, fn func(R, T) R) R {
 }
 
 // ToDict 分组函数 可以对key映射
-func ToDict[K comparable, T any, TS Foreach[T]](ts TS, kFn func(T) K) Dict[K, T] {
+func ToDict[K comparable, T any, TS Iterator[T]](ts TS, kFn func(T) K) Dict[K, T] {
 	dict := Dict_[K, T](4)
 	ts.Foreach(func(t T) {
 		dict.Store(kFn(t), t)
@@ -141,7 +141,7 @@ func ToDict[K comparable, T any, TS Foreach[T]](ts TS, kFn func(T) K) Dict[K, T]
 }
 
 // VToDict 分组函数 可以对key和value映射
-func VToDict[K comparable, V, T any, TS Foreach[T]](ts TS, kvFn func(T) (K, V)) Dict[K, V] {
+func VToDict[K comparable, V, T any, TS Iterator[T]](ts TS, kvFn func(T) (K, V)) Dict[K, V] {
 	dict := Dict_[K, V](4)
 	ts.Foreach(func(t T) {
 		dict.Store(kvFn(t))
@@ -150,7 +150,7 @@ func VToDict[K comparable, V, T any, TS Foreach[T]](ts TS, kvFn func(T) (K, V)) 
 }
 
 // GroupBy 分组函数 可以对key映射
-func GroupBy[K comparable, T any, TS Foreach[T]](ts TS, kFn func(T) K) MDict[K, T] {
+func GroupBy[K comparable, T any, TS Iterator[T]](ts TS, kFn func(T) K) MDict[K, T] {
 	dict := MDict_[K, T](4)
 	ts.Foreach(func(t T) {
 		dict.Store(kFn(t), t)
@@ -159,7 +159,7 @@ func GroupBy[K comparable, T any, TS Foreach[T]](ts TS, kFn func(T) K) MDict[K, 
 }
 
 // VGroupBy 分组函数 可以对key和value同时映射
-func VGroupBy[K comparable, V, T any, TS Foreach[T]](ts TS, kvFn func(T) (K, V)) MDict[K, V] {
+func VGroupBy[K comparable, V, T any, TS Iterator[T]](ts TS, kvFn func(T) (K, V)) MDict[K, V] {
 	dict := MDict_[K, V](4)
 	ts.Foreach(func(t T) {
 		dict.Store(kvFn(t))
