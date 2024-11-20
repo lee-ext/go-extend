@@ -16,7 +16,7 @@ func VecInit[E any](len_ int, fn_ ...func(int) E) Vec[E] {
 	vec := make(Vec[E], len_)
 	if len(fn_) > 0 {
 		fn := fn_[0]
-		for i := 0; i < len_; i++ {
+		for i := range len_ {
 			vec[i] = fn(i)
 		}
 	}
