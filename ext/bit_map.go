@@ -119,7 +119,7 @@ func (bm *Bytes2BitMap) Value() []byte {
 
 func (bm *Bytes2BitMap) Set(index int, v uint8) {
 	if v < 1<<2 {
-		index = index * 2
+		index *= 2
 		for i := range 2 {
 			bm.bm.Set(index+i, (v>>i)&1 == 1)
 		}
@@ -128,7 +128,7 @@ func (bm *Bytes2BitMap) Set(index int, v uint8) {
 
 func (bm *Bytes2BitMap) Get(index int) uint8 {
 	v := 0
-	index = index * 2
+	index *= 2
 	for i := range 2 {
 		if bm.bm.Get(index + i) {
 			v += 1 << i
