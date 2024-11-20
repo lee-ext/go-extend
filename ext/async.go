@@ -6,6 +6,18 @@ import (
 	"time"
 )
 
+// DefaultDeferFn example
+func DefaultDeferFn(r any) {
+	switch e := r.(type) {
+	case error:
+		fmt.Printf("Error: %#v\n", e.Error())
+	case nil:
+		break
+	default:
+		fmt.Printf("Unknown error: %#v\n", e)
+	}
+}
+
 // Launch a new function, deferFn used for recover processing,
 // panic does not cause a crash
 func Launch(fn func(), deferFn func(any)) {
