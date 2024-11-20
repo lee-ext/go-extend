@@ -1,8 +1,14 @@
 package ext
 
+import "fmt"
+
 type KV[K comparable, V any] struct {
-	K K
-	V V
+	K K `json:"k"`
+	V V `json:"v"`
+}
+
+func (kv KV[K, V]) String() string {
+	return fmt.Sprintf("{%v:%v}", kv.K, kv.V)
 }
 
 func KV_[K comparable, V any](k K, v V) KV[K, V] {

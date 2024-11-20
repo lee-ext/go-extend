@@ -19,16 +19,17 @@ func Map[T, R any, TS Foreach[T]](ts TS, fn func(T) R) Vec[R] {
 	return rs
 }
 
-// IndexMap 将Vec[T]转成Vec[R]
-func IndexMap[T, R any](vec Vec[T], fn func(int, T) R) Vec[R] {
-	rs := Vec_[R](vec.Len())
-	for i, t := range vec {
-		rs.Append(fn(i, t))
-	}
+// IntactTo 同Map函数但支持更多类型
+func IntactTo[T any, TS Foreach[T], RS _AppendSelf[T, RS]](
+	ts TS, toFn func(int) RS) RS {
+	rs := toFn(ts.Len())
+	ts.Foreach(func(t T) {
+		rs = rs._AppendSelf(t)
+	})
 	return rs
 }
 
-// MapTo 同 Map函数但支持更多类型
+// MapTo 同Map函数但支持更多类型
 func MapTo[T, R any, TS Foreach[T], RS _AppendSelf[R, RS]](
 	ts TS, fn func(T) R, toFn func(int) RS) RS {
 	rs := toFn(ts.Len())
@@ -70,15 +71,6 @@ func FlatMap[T, R any, TS Foreach[T], RS Foreach[R]](ts TS, fn func(T) RS) Vec[R
 	return Flatten[R](Map(ts, fn))
 }
 
-// IndexFlatMap 将Vec[T]平铺成Vec[R]
-func IndexFlatMap[T, R any, RS Foreach[R]](vec Vec[T], fn func(int, T) RS) Vec[R] {
-	rs := Vec_[RS](vec.Len())
-	for i, t := range vec {
-		rs.Append(fn(i, t))
-	}
-	return Flatten[R](rs)
-}
-
 // FlatMapTo 同 FlatMap 函数但支持更多类型
 func FlatMapTo[T, R any, TS Foreach[T], RS Foreach[R], FlatRS _AppendSelf[R, FlatRS]](
 	ts TS, fn func(T) RS, toFn func(int) FlatRS) FlatRS {
@@ -93,17 +85,6 @@ func Filter[T any, TS Foreach[T]](ts TS, fn func(T) bool) Vec[T] {
 			rs.Append(t)
 		}
 	})
-	return rs
-}
-
-// IndexFilter 过滤Vec[E]中不需要的元素
-func IndexFilter[T any](vec Vec[T], fn func(int, T) bool) Vec[T] {
-	rs := Vec_[T](filterLen(vec.Len()))
-	for i, t := range vec {
-		if fn(i, t) {
-			rs.Append(t)
-		}
-	}
 	return rs
 }
 
@@ -127,17 +108,6 @@ func FilterMap[T, R any, TS Foreach[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
 			rs.Append(r)
 		}
 	})
-	return rs
-}
-
-// IndexFilterMap 将Vec[E]转成Vec[RangeTo] 并过滤不需要的元素
-func IndexFilterMap[T, R any](vec Vec[T], fn func(int, T) Opt[R]) Vec[R] {
-	rs := Vec_[R](filterLen(vec.Len()))
-	for i, t := range vec {
-		if r, b := fn(i, t).D(); b {
-			rs.Append(r)
-		}
-	}
 	return rs
 }
 
@@ -197,11 +167,6 @@ func VGroupBy[K comparable, V, T any, TS Foreach[T]](ts TS, kvFn func(T) (K, V))
 	return dict
 }
 
-// FollowSort 跟随排序
-/*func FollowSort[O comparable, E any](orders Vec[O], vec Vec[E], kFn func(E) O) Vec[E] {
-	return MapFilter(orders, ToDict(vec, kFn).Load)
-}*/
-
 func filterLen(len_ int) int {
 	switch {
 	case len_ < 8:
@@ -219,8 +184,4 @@ func filterLen(len_ int) int {
 		}
 		return len4
 	}
-}
-
-func Init_[T any]() T {
-	return *new(T)
 }

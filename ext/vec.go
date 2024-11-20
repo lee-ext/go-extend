@@ -141,7 +141,7 @@ type RevVec[E any] struct {
 }
 
 func (v RevVec[E]) Foreach(fn func(E)) {
-	for i := v.Len(); i >= 0; {
+	for i := v.Len(); i > 0; {
 		i -= 1
 		fn(v.Vec[i])
 	}
@@ -149,6 +149,20 @@ func (v RevVec[E]) Foreach(fn func(E)) {
 
 func (v RevVec[E]) Get(index int) Opt[E] {
 	return v.Vec.Get(v.Len() - index - 1)
+}
+
+type SeqVec[E any] struct {
+	Vec[E]
+}
+
+func (v Vec[E]) ToSeq() SeqVec[E] {
+	return SeqVec[E]{v}
+}
+
+func (v SeqVec[E]) Foreach(fn func(KV[int, E])) {
+	for i, e := range v.Vec {
+		fn(KV_(i, e))
+	}
 }
 
 var _EmptyJson = []byte("[]")

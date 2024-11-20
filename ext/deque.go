@@ -199,7 +199,7 @@ func (d Deque[E]) Empty() bool {
 }
 
 func (d Deque[E]) _AppendSelf(e E) Deque[E] {
-	d.data = append(d.data, e)
+	d.PushBack(e)
 	return d
 }
 

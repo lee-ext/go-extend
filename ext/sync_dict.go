@@ -450,16 +450,16 @@ func (m *SyncDict[K, V]) CompareAndDelete(key K, old V) (deleted bool) {
 	return false
 }
 
-// range_ calls f sequentially for each key and value present in the map.
+// Range calls f sequentially for each key and value present in the map.
 // If f returns false, range stops the iteration.
 //
-// range_ does not necessarily correspond to any consistent snapshot of the SyncDict's
+// Range does not necessarily correspond to any consistent snapshot of the SyncDict's
 // contents: no key will be visited more than once, but if the value for any key
-// is stored or deleted concurrently (including by f), range_ may reflect any
-// mapping for that key from any point during the range_ call. range_ does not
+// is stored or deleted concurrently (including by f), Range may reflect any
+// mapping for that key from any point during the Range call. Range does not
 // block other methods on the receiver; even f itself may call any method on m.
 //
-// range_ may be t(N) with the number of elements in the map even if f returns
+// Range may be t(N) with the number of elements in the map even if f returns
 // false after a constant number of calls.
 func (m *SyncDict[K, V]) Range(f func(key K, value V) bool) {
 	// We need to be able to iterate over all of the keys that were already
