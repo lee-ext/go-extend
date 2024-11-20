@@ -43,7 +43,7 @@ func (bm *BytesBitMap) Get(index int) bool {
 func (bm *BytesBitMap) Count() int {
 	count := 0
 	len_ := len(bm.value) * 8
-	for i := 0; i < len_; i++ {
+	for i := range len_ {
 		if bm.get(i) {
 			count += 1
 		}
@@ -93,7 +93,7 @@ func (bm *BitMap[T]) Get(index int) bool {
 func (bm *BitMap[T]) Count() int {
 	count := 0
 	len_ := int(unsafe.Sizeof(bm.value)) * 8
-	for i := 0; i < len_; i++ {
+	for i := range len_ {
 		if bm.get(i) {
 			count += 1
 		}
