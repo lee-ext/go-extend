@@ -9,10 +9,10 @@ import (
 // DefaultDeferFn example
 func DefaultDeferFn(r any) {
 	switch e := r.(type) {
-	case error:
-		fmt.Printf("Error: %v\n", e.Error())
 	case nil:
 		break
+	case error:
+		fmt.Printf("Error: %v\n", e.Error())
 	default:
 		fmt.Printf("Unknown error: %#v\n", e)
 	}

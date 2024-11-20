@@ -15,8 +15,9 @@ func Actor_(cap int, deferFn func(any)) Actor {
 func (a Actor) receive(deferFn func(any)) {
 	go func() {
 		defer func() {
-			if r := recover(); r != nil {
-				deferFn(recover())
+			r := recover()
+			deferFn(r)
+			if r != nil {
 				go a.receive(deferFn)
 			}
 		}()
