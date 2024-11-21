@@ -111,7 +111,7 @@ func (d Dict[K, V]) Clear() {
 	clear(d)
 }
 
-func (d Dict[K, V]) _AppendSelf(kv KV[K, V]) Dict[K, V] {
+func (d Dict[K, V]) AppendSelf(kv KV[K, V]) Dict[K, V] {
 	d[kv.K] = kv.V
 	return d
 }

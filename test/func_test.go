@@ -18,7 +18,7 @@ func TestFunc(t *testing.T) {
 	fmt.Println(set.Contains(5))
 	fmt.Println(set)
 
-	dict := IntactTo(vec.ToSeq(), Dict_)
+	dict := IntactTo(vec.ToIndexed(), Dict_)
 	fmt.Println(dict)
 
 	vec3 := IntactTo(vec.ToRev(), Vec_)

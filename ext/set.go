@@ -124,7 +124,7 @@ func (s Set[E]) Clear() {
 	clear(s)
 }
 
-func (s Set[E]) _AppendSelf(element E) Set[E] {
+func (s Set[E]) AppendSelf(element E) Set[E] {
 	s[element] = Unit{}
 	return s
 }

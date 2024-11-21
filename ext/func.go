@@ -6,11 +6,11 @@ type Iterator[E any] interface {
 	Empty() bool
 }
 
-type _AppendSelf[E, ES any] interface {
-	_AppendSelf(E) ES
+type FromIterator[E, ES any] interface {
+	AppendSelf(E) ES
 }
 
-// Map 将Foreach[T]转成Vec[R]
+// Map 将Iterator[T]转成Vec[R]
 func Map[T, R any, TS Iterator[T]](ts TS, fn func(T) R) Vec[R] {
 	rs := Vec_[R](ts.Len())
 	ts.Foreach(func(t T) {
@@ -20,26 +20,26 @@ func Map[T, R any, TS Iterator[T]](ts TS, fn func(T) R) Vec[R] {
 }
 
 // IntactTo 同Map函数但支持更多类型
-func IntactTo[T any, TS Iterator[T], RS _AppendSelf[T, RS]](
+func IntactTo[T any, TS Iterator[T], RS FromIterator[T, RS]](
 	ts TS, toFn func(int) RS) RS {
 	rs := toFn(ts.Len())
 	ts.Foreach(func(t T) {
-		rs = rs._AppendSelf(t)
+		rs = rs.AppendSelf(t)
 	})
 	return rs
 }
 
 // MapTo 同Map函数但支持更多类型
-func MapTo[T, R any, TS Iterator[T], RS _AppendSelf[R, RS]](
+func MapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	ts TS, fn func(T) R, toFn func(int) RS) RS {
 	rs := toFn(ts.Len())
 	ts.Foreach(func(t T) {
-		rs = rs._AppendSelf(fn(t))
+		rs = rs.AppendSelf(fn(t))
 	})
 	return rs
 }
 
-// Flatten 将Foreach[Iterator[T]]平铺成Vec[E]
+// Flatten 将Iterator[Iterator[T]]平铺成Vec[E]
 func Flatten[T any, TS Iterator[T], TG Iterator[TS]](tg TG) Vec[T] {
 	rs := Vec_[T](Reduce(tg, 0,
 		func(l int, r TS) int {
@@ -51,8 +51,8 @@ func Flatten[T any, TS Iterator[T], TG Iterator[TS]](tg TG) Vec[T] {
 	return rs
 }
 
-// FlattenTo 同 Flatten函数但支持更多类型
-func FlattenTo[T any, TS Iterator[T], TG Iterator[TS], FlatTS _AppendSelf[T, FlatTS]](
+// FlattenTo 同Flatten函数但支持更多类型
+func FlattenTo[T any, TS Iterator[T], TG Iterator[TS], FlatTS FromIterator[T, FlatTS]](
 	tg TG, toFn func(int) FlatTS) FlatTS {
 	rs := toFn(Reduce(tg, 0,
 		func(l int, r TS) int {
@@ -60,24 +60,24 @@ func FlattenTo[T any, TS Iterator[T], TG Iterator[TS], FlatTS _AppendSelf[T, Fla
 		}))
 	tg.Foreach(func(ts TS) {
 		ts.Foreach(func(t T) {
-			rs = rs._AppendSelf(t)
+			rs = rs.AppendSelf(t)
 		})
 	})
 	return rs
 }
 
-// FlatMap 将Foreach[T]平铺成Vec[R]
+// FlatMap 将Iterator[T]平铺成Vec[R]
 func FlatMap[T, R any, TS Iterator[T], RS Iterator[R]](ts TS, fn func(T) RS) Vec[R] {
 	return Flatten[R](Map(ts, fn))
 }
 
 // FlatMapTo 同 FlatMap 函数但支持更多类型
-func FlatMapTo[T, R any, TS Iterator[T], RS Iterator[R], FlatRS _AppendSelf[R, FlatRS]](
+func FlatMapTo[T, R any, TS Iterator[T], RS Iterator[R], FlatRS FromIterator[R, FlatRS]](
 	ts TS, fn func(T) RS, toFn func(int) FlatRS) FlatRS {
 	return FlattenTo(Map(ts, fn), toFn)
 }
 
-// Filter 过滤Foreach[T]中不需要的元素
+// Filter 过滤Iterator[T]中不需要的元素
 func Filter[T any, TS Iterator[T]](ts TS, fn func(T) bool) Vec[T] {
 	rs := Vec_[T](filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
@@ -89,18 +89,18 @@ func Filter[T any, TS Iterator[T]](ts TS, fn func(T) bool) Vec[T] {
 }
 
 // FilterTo 同 Filter 函数但支持更多类型
-func FilterTo[T any, TS Iterator[T], RS _AppendSelf[T, RS]](
+func FilterTo[T any, TS Iterator[T], RS FromIterator[T, RS]](
 	ts TS, fn func(T) bool, toFn func(int) RS) RS {
 	rs := toFn(filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
 		if fn(t) {
-			rs = rs._AppendSelf(t)
+			rs = rs.AppendSelf(t)
 		}
 	})
 	return rs
 }
 
-// FilterMap 将Vec[E]转成Vec[RangeTo] 并过滤不需要的元素
+// FilterMap 将Iterator[E]转成Iterator[R] 并过滤不需要的元素
 func FilterMap[T, R any, TS Iterator[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
 	rs := Vec_[R](filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
@@ -111,19 +111,19 @@ func FilterMap[T, R any, TS Iterator[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
 	return rs
 }
 
-// FilterMapTo 同 FilterMap 函数但支持更多类型
-func FilterMapTo[T, R any, TS Iterator[T], RS _AppendSelf[R, RS]](
+// FilterMapTo 同FilterMap 函数但支持更多类型
+func FilterMapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	ts TS, fn func(T) Opt[R], toFn func(int) RS) RS {
 	rs := toFn(filterLen(ts.Len()))
 	ts.Foreach(func(t T) {
 		if r, b := fn(t).D(); b {
-			rs = rs._AppendSelf(r)
+			rs = rs.AppendSelf(r)
 		}
 	})
 	return rs
 }
 
-// Reduce 对Vec[E]做合并操作 需要一个种子
+// Reduce 对Iterator[E]做合并操作 需要一个种子
 func Reduce[T, R any, TS Iterator[T]](ts TS, seed R, fn func(R, T) R) R {
 	ts.Foreach(func(t T) {
 		seed = fn(seed, t)

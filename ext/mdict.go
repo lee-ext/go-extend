@@ -97,7 +97,7 @@ func (d MDict[K, V]) Clear() {
 	clear(d)
 }
 
-func (d MDict[K, V]) _AppendSelf(kv KV[K, Vec[V]]) MDict[K, V] {
+func (d MDict[K, V]) AppendSelf(kv KV[K, Vec[V]]) MDict[K, V] {
 	d[kv.K] = kv.V
 	return d
 }

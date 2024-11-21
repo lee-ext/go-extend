@@ -114,7 +114,7 @@ func (v Vec[E]) Clone() Vec[E] {
 	return slices.Clone(v)
 }
 
-func (v Vec[E]) _AppendSelf(element E) Vec[E] {
+func (v Vec[E]) AppendSelf(element E) Vec[E] {
 	return append(v, element)
 }
 
@@ -151,15 +151,15 @@ func (v RevVec[E]) Get(index int) Opt[E] {
 	return v.Vec.Get(v.Len() - index - 1)
 }
 
-type SeqVec[E any] struct {
+type IndexedVec[E any] struct {
 	Vec[E]
 }
 
-func (v Vec[E]) ToSeq() SeqVec[E] {
-	return SeqVec[E]{v}
+func (v Vec[E]) ToIndexed() IndexedVec[E] {
+	return IndexedVec[E]{v}
 }
 
-func (v SeqVec[E]) Foreach(fn func(KV[int, E])) {
+func (v IndexedVec[E]) Foreach(fn func(KV[int, E])) {
 	for i, e := range v.Vec {
 		fn(KV_(i, e))
 	}

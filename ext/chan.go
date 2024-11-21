@@ -38,7 +38,7 @@ func (c Sender[E]) Close() {
 	close(c)
 }
 
-func (c Sender[E]) _AppendSelf(element E) Sender[E] {
+func (c Sender[E]) AppendSelf(element E) Sender[E] {
 	c <- element
 	return c
 }

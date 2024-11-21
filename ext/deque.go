@@ -198,7 +198,7 @@ func (d Deque[E]) Empty() bool {
 	return len(d.data) == 0
 }
 
-func (d Deque[E]) _AppendSelf(e E) Deque[E] {
+func (d Deque[E]) AppendSelf(e E) Deque[E] {
 	d.PushBack(e)
 	return d
 }
