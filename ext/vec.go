@@ -132,22 +132,22 @@ func (v Vec[E]) Shuffle() {
 	}
 }
 
-func (v Vec[E]) ToRev() RevVec[E] {
-	return RevVec[E]{v}
+func (v Vec[E]) ToReverse() ReverseVec[E] {
+	return ReverseVec[E]{v}
 }
 
-type RevVec[E any] struct {
+type ReverseVec[E any] struct {
 	Vec[E]
 }
 
-func (v RevVec[E]) Foreach(fn func(E)) {
+func (v ReverseVec[E]) Foreach(fn func(E)) {
 	for i := v.Len(); i > 0; {
 		i -= 1
 		fn(v.Vec[i])
 	}
 }
 
-func (v RevVec[E]) Get(index int) Opt[E] {
+func (v ReverseVec[E]) Get(index int) Opt[E] {
 	return v.Vec.Get(v.Len() - index - 1)
 }
 
