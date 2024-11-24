@@ -133,20 +133,16 @@ func Reduce[T, R any, TS Iterator[T]](ts TS, seed R, fn func(R, T) R) R {
 
 // ToDict 分组函数 可以对key映射
 func ToDict[K comparable, T any, TS Iterator[T]](ts TS, kFn func(T) K) Dict[K, T] {
-	dict := Dict_[K, T](4)
-	ts.Foreach(func(t T) {
-		dict.Store(kFn(t), t)
-	})
-	return dict
+	return MapTo(ts, func(t T) KV[K, T] {
+		return KV_(kFn(t), t)
+	}, Dict_)
 }
 
 // VToDict 分组函数 可以对key和value映射
 func VToDict[K comparable, V, T any, TS Iterator[T]](ts TS, kvFn func(T) (K, V)) Dict[K, V] {
-	dict := Dict_[K, V](4)
-	ts.Foreach(func(t T) {
-		dict.Store(kvFn(t))
-	})
-	return dict
+	return MapTo(ts, func(t T) KV[K, V] {
+		return KV_(kvFn(t))
+	}, Dict_)
 }
 
 // GroupBy 分组函数 可以对key映射

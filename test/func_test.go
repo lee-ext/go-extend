@@ -87,4 +87,44 @@ func TestFunc(t *testing.T) {
 		return l + r
 	})
 	fmt.Println(sum)
+
+	type Student struct {
+		Id   int
+		Name string
+		Age  int
+	}
+
+	stuVec := VecOf(Student{
+		Id:   1,
+		Name: "Tom",
+		Age:  1,
+	}, Student{
+		Id:   2,
+		Name: "Jerry",
+		Age:  1,
+	}, Student{
+		Id:   3,
+		Name: "Spike",
+		Age:  2,
+	})
+
+	stuDict := ToDict(stuVec, func(t Student) int {
+		return t.Id
+	})
+	fmt.Println(stuDict)
+
+	stuDict0 := VToDict(stuVec, func(t Student) (int, string) {
+		return t.Id, t.Name
+	})
+	fmt.Println(stuDict0)
+
+	stuGroup := GroupBy(stuVec, func(t Student) int {
+		return t.Age
+	})
+	fmt.Println(stuGroup)
+
+	stuGroup0 := VGroupBy(stuVec, func(t Student) (int, string) {
+		return t.Age, t.Name
+	})
+	fmt.Println(stuGroup0)
 }

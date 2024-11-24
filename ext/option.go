@@ -10,10 +10,6 @@ type Opt[T any] struct {
 	b bool
 }
 
-func ResOpt[T any](t T, e error) Opt[T] {
-	return Opt[T]{t, e == nil}
-}
-
 func Opt_[T any](t T, b bool) Opt[T] {
 	return Opt[T]{t, b}
 }
@@ -82,7 +78,7 @@ func (o Opt[T]) String() string {
 	return "none"
 }
 
-// NzOpt Non zero opt
+// NzOpt Non zero option
 type NzOpt[T comparable] struct {
 	v T
 }
