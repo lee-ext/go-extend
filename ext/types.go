@@ -25,3 +25,13 @@ type Float interface {
 type Number interface {
 	Integer | Float
 }
+
+type Iterator[E any] interface {
+	ForEach(func(E))
+	Len() int
+	Empty() bool
+}
+
+type FromIterator[E, ES any] interface {
+	AppendSelf(E) ES
+}

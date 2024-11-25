@@ -30,7 +30,7 @@ func DictOf[K comparable, V any](m map[K]V) Dict[K, V] {
 	return m
 }
 
-func (d Dict[K, V]) Foreach(fn func(KV[K, V])) {
+func (d Dict[K, V]) ForEach(fn func(KV[K, V])) {
 	for k, v := range d {
 		fn(KV_(k, v))
 	}

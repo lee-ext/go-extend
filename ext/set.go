@@ -21,7 +21,7 @@ func SetOf[E comparable](es ...E) Set[E] {
 	return s
 }
 
-func (s Set[E]) Foreach(fn func(E)) {
+func (s Set[E]) ForEach(fn func(E)) {
 	for e := range s {
 		fn(e)
 	}

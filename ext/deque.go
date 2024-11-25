@@ -6,15 +6,15 @@ import (
 	"unsafe"
 )
 
+// Deque 环形队列
+type Deque[E any] struct {
+	*_DequePin[E]
+}
+
 type _DequePin[E any] struct {
 	data []E
 	head int
 	tail int
-}
-
-// Deque 环形队列
-type Deque[E any] struct {
-	*_DequePin[E]
 }
 
 func Deque_[E any](cap_ int) Deque[E] {
@@ -149,7 +149,7 @@ func (d Deque[E]) Back() Opt[E] {
 	return Opt_(d.data[d.tail], true)
 }
 
-func (d Deque[E]) Foreach(fn func(E)) {
+func (d Deque[E]) ForEach(fn func(E)) {
 	if d.head > d.tail {
 		for _, e := range d.data[d.head:] {
 			fn(e)

@@ -19,7 +19,7 @@ func (b Bytes) Cap() int {
 	return cap(b)
 }
 
-func (b Bytes) Foreach(fn func(byte)) {
+func (b Bytes) ForEach(fn func(byte)) {
 	for _, e := range b {
 		fn(e)
 	}

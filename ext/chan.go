@@ -57,7 +57,7 @@ func (c Receiver[E]) TryRecv() Opt[E] {
 	}
 }
 
-func (c Receiver[E]) Foreach(fn func(E)) {
+func (c Receiver[E]) ForEach(fn func(E)) {
 	for e := range c {
 		fn(e)
 	}
