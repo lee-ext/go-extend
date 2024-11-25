@@ -2,6 +2,7 @@ package ext
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"maps"
 )
@@ -24,16 +25,6 @@ func SetOf[E comparable](es ...E) Set[E] {
 	return s
 }
 
-// SetOfUnmarshalJSON 通过JSON 反序列化方法 创建一个集合
-func SetOfUnmarshalJSON[E comparable](data []byte) (Set[E], error) {
-	vec := make(Vec[E], 0) // 临时存储 JSON 数据
-	err := json.Unmarshal(data, &vec)
-	if err != nil {
-		return nil, err
-	}
-	return SetOf[E](vec...), nil // 将切片中的元素存入集合
-}
-
 // ForEach 遍历集合，对每个元素执行给定的函数
 func (s Set[E]) ForEach(fn func(E)) {
 	for e := range s {
@@ -51,12 +42,9 @@ func (s Set[E]) Empty() bool {
 	return len(s) == 0
 }
 
-// Add 向集合中插入元素并返回自身
-func (s Set[E]) Add(es ...E) Set[E] {
-	for _, e := range es {
-		s[e] = Unit{}
-	}
-	return s
+// Insert 向集合中插入元素并返回自身
+func (s Set[E]) Insert(element E) {
+	s[element] = Unit{}
 }
 
 // Remove 从集合中移除一个元素
@@ -153,12 +141,31 @@ func (s Set[E]) Clear() {
 	clear(s)
 }
 
-// ToString 将集合转换为字符串表示
-func (s Set[E]) ToString() string {
+// AppendSelf 向集合中插入元素并返回自身
+func (s Set[E]) AppendSelf(element E) Set[E] {
+	s[element] = Unit{}
+	return s
+}
+
+// String 将集合转换为字符串表示
+func (s Set[E]) String() string {
 	return fmt.Sprintf("set%v", s.ToVec())
 }
 
 // MarshalJSON 实现 JSON 序列化方法
 func (s Set[E]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.ToVec()) // 将集合转换为切片再序列化
+}
+
+// UnmarshalJSON 通过JSON 反序列化方法修改当前集合
+func (s *Set[E]) UnmarshalJSON(data []byte) error {
+	if s == nil {
+		return errors.New("UnmarshalJSON on nil pointer")
+	}
+	vec := new(Vec[E])
+	err := json.Unmarshal(data, vec)
+	if err == nil {
+		*s = SetOf[E](*vec...)
+	}
+	return err
 }
