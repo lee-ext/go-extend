@@ -2,6 +2,52 @@ package ext
 
 import "unsafe"
 
+type BitMap[T Integer] struct {
+	value T
+}
+
+func BitMap_[T Integer](value T) BitMap[T] {
+	return BitMap[T]{value}
+}
+
+func (bm *BitMap[T]) Value() T {
+	return bm.value
+}
+
+// Set 把T的第index位置为b
+func (bm *BitMap[T]) Set(index int, b bool) {
+	v := bm.value
+	if b {
+		v |= T(1) << index
+	} else {
+		v &= ^(T(1) << index)
+	}
+	bm.value = v
+}
+
+// Get 获取T中的第index位置的值
+func (bm *BitMap[T]) Get(index int) bool {
+	if index >= int(unsafe.Sizeof(bm.value))*8 {
+		return false
+	}
+	return bm.get(index)
+}
+
+func (bm *BitMap[T]) Count() int {
+	count := 0
+	len_ := int(unsafe.Sizeof(bm.value)) * 8
+	for i := range len_ {
+		if bm.get(i) {
+			count += 1
+		}
+	}
+	return count
+}
+
+func (bm *BitMap[T]) get(index int) bool {
+	return (bm.value>>index)&1 == 1
+}
+
 type BytesBitMap struct {
 	value []byte
 }
@@ -57,52 +103,6 @@ func (bm *BytesBitMap) Len() int {
 
 func (bm *BytesBitMap) get(index int) bool {
 	return (bm.value[index/8]>>(index%8))&1 == 1
-}
-
-type BitMap[T Integer] struct {
-	value T
-}
-
-func BitMap_[T Integer](value T) BitMap[T] {
-	return BitMap[T]{value}
-}
-
-func (bm *BitMap[T]) Value() T {
-	return bm.value
-}
-
-// Set 把T的第index位置为b
-func (bm *BitMap[T]) Set(index int, b bool) {
-	v := bm.value
-	if b {
-		v |= T(1) << index
-	} else {
-		v &= ^(T(1) << index)
-	}
-	bm.value = v
-}
-
-// Get 获取T中的第index位置的值
-func (bm *BitMap[T]) Get(index int) bool {
-	if index >= int(unsafe.Sizeof(bm.value))*8 {
-		return false
-	}
-	return bm.get(index)
-}
-
-func (bm *BitMap[T]) Count() int {
-	count := 0
-	len_ := int(unsafe.Sizeof(bm.value)) * 8
-	for i := range len_ {
-		if bm.get(i) {
-			count += 1
-		}
-	}
-	return count
-}
-
-func (bm *BitMap[T]) get(index int) bool {
-	return (bm.value>>index)&1 == 1
 }
 
 type Bytes2BitMap struct {

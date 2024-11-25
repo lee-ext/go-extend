@@ -11,7 +11,7 @@ func MDictOf[K comparable, V any](m map[K]Vec[V]) MDict[K, V] {
 	return m
 }
 
-func (d MDict[K, V]) Foreach(fn func(KV[K, Vec[V]])) {
+func (d MDict[K, V]) ForEach(fn func(KV[K, Vec[V]])) {
 	for k, v := range d {
 		fn(KV_(k, v))
 	}

@@ -27,7 +27,7 @@ func VecOf[E any](es ...E) Vec[E] {
 	return es
 }
 
-func (v Vec[E]) Foreach(fn func(E)) {
+func (v Vec[E]) ForEach(fn func(E)) {
 	for _, e := range v {
 		fn(e)
 	}
@@ -140,7 +140,7 @@ type ReverseVec[E any] struct {
 	Vec[E]
 }
 
-func (v ReverseVec[E]) Foreach(fn func(E)) {
+func (v ReverseVec[E]) ForEach(fn func(E)) {
 	for i := v.Len(); i > 0; {
 		i -= 1
 		fn(v.Vec[i])
@@ -159,7 +159,7 @@ func (v Vec[E]) ToIndexed() IndexedVec[E] {
 	return IndexedVec[E]{v}
 }
 
-func (v IndexedVec[E]) Foreach(fn func(KV[int, E])) {
+func (v IndexedVec[E]) ForEach(fn func(KV[int, E])) {
 	for i, e := range v.Vec {
 		fn(KV_(i, e))
 	}
