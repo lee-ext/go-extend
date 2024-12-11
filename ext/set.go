@@ -152,7 +152,7 @@ func (s Set[E]) String() string {
 
 // MarshalJSON Implement JSON serialization
 func (s Set[E]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.ToVec()) // 将集合转换为切片再序列化
+	return json.Marshal(s.ToVec())
 }
 
 // UnmarshalJSON Implement JSON deserialization
