@@ -2,7 +2,6 @@ package ext
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"maps"
 )
@@ -158,9 +157,6 @@ func (s Set[E]) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON Implement JSON deserialization
 func (s *Set[E]) UnmarshalJSON(data []byte) error {
-	if s == nil {
-		return errors.New("UnmarshalJSON on nil pointer")
-	}
 	vec := new(Vec[E])
 	err := json.Unmarshal(data, vec)
 	if err == nil {
