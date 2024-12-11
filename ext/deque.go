@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-// Deque 环形队列
+// Deque Define a generic ring queue
 type Deque[E any] struct {
 	*_DequePin[E]
 }

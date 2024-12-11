@@ -92,6 +92,8 @@ func (r CuRes[T]) ErrMap(fn func(err error)) CuRes[T] {
 		break
 	case error:
 		fn(v)
+	default:
+		fn(errors.New("data is none"))
 	}
 	return r
 }

@@ -29,8 +29,21 @@ func (a Actor) receive(deferFn func(any)) {
 
 // Launch a function to the actor
 // If you need to get the returned result, you can use Promise[T] or chan
+//
+//	p, f := Promise_[T](0)
+//	actor.Launch(func() {
+//		t := ...
+//		f(t)
+//	})
+//	return p
 func (a Actor) Launch(fn func()) {
 	a.ch <- fn
+}
+
+func ActorAsync[T any](actor Actor, fn func() T) Promise[T] {
+	p, f := Promise_[T](0)
+	actor.Launch(func() { f(fn()) })
+	return p
 }
 
 // Close the actor

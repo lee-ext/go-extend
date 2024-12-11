@@ -118,12 +118,6 @@ func (v Vec[E]) AppendSelf(element E) Vec[E] {
 	return append(v, element)
 }
 
-func (v Vec[E]) IndexForeach(fn func(T2[int, E])) {
-	for i, e := range v {
-		fn(T2_(i, e))
-	}
-}
-
 func (v Vec[E]) Shuffle() {
 	len_ := v.Len()
 	for i := range len_ {

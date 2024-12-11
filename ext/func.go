@@ -1,6 +1,6 @@
 package ext
 
-// Map 将Iterator[T]转成Vec[R]
+// Map Convert Iterator[T] to Vec[R]
 func Map[T, R any, TS Iterator[T]](ts TS, fn func(T) R) Vec[R] {
 	rs := Vec_[R](ts.Len())
 	ts.ForEach(func(t T) {
@@ -9,7 +9,7 @@ func Map[T, R any, TS Iterator[T]](ts TS, fn func(T) R) Vec[R] {
 	return rs
 }
 
-// IntactTo 同Map函数但支持更多类型
+// IntactTo Convert and keep the internal elements intact
 func IntactTo[T any, TS Iterator[T], RS FromIterator[T, RS]](
 	ts TS, toFn func(int) RS) RS {
 	rs := toFn(ts.Len())
@@ -19,7 +19,7 @@ func IntactTo[T any, TS Iterator[T], RS FromIterator[T, RS]](
 	return rs
 }
 
-// MapTo 同Map函数但支持更多类型
+// MapTo Same as Map but supports more containers
 func MapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	ts TS, fn func(T) R, toFn func(int) RS) RS {
 	rs := toFn(ts.Len())
@@ -29,7 +29,7 @@ func MapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	return rs
 }
 
-// Flatten 将Iterator[Iterator[T]]平铺成Vec[E]
+// Flatten Flattening the Iterator[T] to Vec[T]
 func Flatten[T any, TS Iterator[T], TG Iterator[TS]](tg TG) Vec[T] {
 	rs := Vec_[T](Reduce(tg, 0,
 		func(l int, r TS) int {
@@ -41,7 +41,7 @@ func Flatten[T any, TS Iterator[T], TG Iterator[TS]](tg TG) Vec[T] {
 	return rs
 }
 
-// FlattenTo 同Flatten函数但支持更多类型
+// FlattenTo Same as Flatten but supports more containers
 func FlattenTo[T any, TS Iterator[T], TG Iterator[TS], FlatTS FromIterator[T, FlatTS]](
 	tg TG, toFn func(int) FlatTS) FlatTS {
 	rs := toFn(Reduce(tg, 0,
@@ -56,18 +56,18 @@ func FlattenTo[T any, TS Iterator[T], TG Iterator[TS], FlatTS FromIterator[T, Fl
 	return rs
 }
 
-// FlatMap 将Iterator[T]平铺成Vec[R]
+// FlatMap Flattening Iterator[T] to Vec[R]
 func FlatMap[T, R any, TS Iterator[T], RS Iterator[R]](ts TS, fn func(T) RS) Vec[R] {
 	return Flatten[R](Map(ts, fn))
 }
 
-// FlatMapTo 同 FlatMap 函数但支持更多类型
+// FlatMapTo Same as FlatMap but supports more containers
 func FlatMapTo[T, R any, TS Iterator[T], RS Iterator[R], FlatRS FromIterator[R, FlatRS]](
 	ts TS, fn func(T) RS, toFn func(int) FlatRS) FlatRS {
 	return FlattenTo(Map(ts, fn), toFn)
 }
 
-// Filter 过滤Iterator[T]中不需要的元素
+// Filter Filtering Iterator[T] to Vec[R]
 func Filter[T any, TS Iterator[T]](ts TS, fn func(T) bool) Vec[T] {
 	rs := Vec_[T](filterLen(ts.Len()))
 	ts.ForEach(func(t T) {
@@ -78,7 +78,7 @@ func Filter[T any, TS Iterator[T]](ts TS, fn func(T) bool) Vec[T] {
 	return rs
 }
 
-// FilterTo 同 Filter 函数但支持更多类型
+// FilterTo Same as Filter but supports more containers
 func FilterTo[T any, TS Iterator[T], RS FromIterator[T, RS]](
 	ts TS, fn func(T) bool, toFn func(int) RS) RS {
 	rs := toFn(filterLen(ts.Len()))
@@ -90,7 +90,7 @@ func FilterTo[T any, TS Iterator[T], RS FromIterator[T, RS]](
 	return rs
 }
 
-// FilterMap 将Iterator[E]转成Iterator[R] 并过滤不需要的元素
+// FilterMap Convert Iterator[T] to Vec[R] and filtering the element
 func FilterMap[T, R any, TS Iterator[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
 	rs := Vec_[R](filterLen(ts.Len()))
 	ts.ForEach(func(t T) {
@@ -101,7 +101,7 @@ func FilterMap[T, R any, TS Iterator[T]](ts TS, fn func(T) Opt[R]) Vec[R] {
 	return rs
 }
 
-// FilterMapTo 同FilterMap 函数但支持更多类型
+// FilterMapTo Same as FilterMap but supports more containers
 func FilterMapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	ts TS, fn func(T) Opt[R], toFn func(int) RS) RS {
 	rs := toFn(filterLen(ts.Len()))
@@ -113,7 +113,7 @@ func FilterMapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	return rs
 }
 
-// Reduce 对Iterator[E]做合并操作 需要一个种子
+// Reduce Iterator[E] requires a seed
 func Reduce[T, R any, TS Iterator[T]](ts TS, seed R, fn func(R, T) R) R {
 	ts.ForEach(func(t T) {
 		seed = fn(seed, t)
@@ -121,21 +121,21 @@ func Reduce[T, R any, TS Iterator[T]](ts TS, seed R, fn func(R, T) R) R {
 	return seed
 }
 
-// ToDict 分组函数 可以对key映射
+// ToDict Convert to a dictionary and map keys
 func ToDict[K comparable, T any, TS Iterator[T]](ts TS, kFn func(T) K) Dict[K, T] {
 	return MapTo(ts, func(t T) KV[K, T] {
 		return KV_(kFn(t), t)
 	}, Dict_)
 }
 
-// VToDict 分组函数 可以对key和value映射
+// VToDict Convert to a dictionary and map keys and values
 func VToDict[K comparable, V, T any, TS Iterator[T]](ts TS, kvFn func(T) (K, V)) Dict[K, V] {
 	return MapTo(ts, func(t T) KV[K, V] {
 		return KV_(kvFn(t))
 	}, Dict_)
 }
 
-// GroupBy 分组函数 可以对key映射
+// GroupBy Grouping function and map keys
 func GroupBy[K comparable, T any, TS Iterator[T]](ts TS, kFn func(T) K) MDict[K, T] {
 	dict := MDict_[K, T](4)
 	ts.ForEach(func(t T) {
@@ -144,7 +144,7 @@ func GroupBy[K comparable, T any, TS Iterator[T]](ts TS, kFn func(T) K) MDict[K,
 	return dict
 }
 
-// VGroupBy 分组函数 可以对key和value同时映射
+// VGroupBy Grouping function and map keys and values
 func VGroupBy[K comparable, V, T any, TS Iterator[T]](ts TS, kvFn func(T) (K, V)) MDict[K, V] {
 	dict := MDict_[K, V](4)
 	ts.ForEach(func(t T) {
@@ -153,6 +153,7 @@ func VGroupBy[K comparable, V, T any, TS Iterator[T]](ts TS, kvFn func(T) (K, V)
 	return dict
 }
 
+// Estimate the length
 func filterLen(len_ int) int {
 	switch {
 	case len_ < 8:
