@@ -30,7 +30,7 @@ func (s Set[E]) ForEach(fn func(E)) {
 	}
 }
 
-// Len Gets the number of elements in the Set[E]
+// Len Get the number of elements in the Set[E]
 func (s Set[E]) Len() int {
 	return len(s)
 }
