@@ -25,6 +25,14 @@ func (b Bytes) ForEach(fn func(byte)) {
 	}
 }
 
+func (b Bytes) ForEachWhile(fn func(byte) bool) {
+	for _, e := range b {
+		if !fn(e) {
+			break
+		}
+	}
+}
+
 func (b Bytes) ToString() string {
 	return string(b)
 }

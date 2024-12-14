@@ -116,6 +116,25 @@ func (d Deque[E]) ForEach(fn func(E)) {
 	}
 }
 
+func (d Deque[E]) ForEachWhile(fn func(E) bool) {
+	if d.head > d.tail {
+		for _, e := range d.data[d.head:] {
+			if !fn(e) {
+				break
+			}
+		}
+		for _, e := range d.data[:d.tail+1] {
+			fn(e)
+		}
+	} else {
+		for _, e := range d.data[d.head : d.tail+1] {
+			if !fn(e) {
+				break
+			}
+		}
+	}
+}
+
 // ToVec Convert a Deque[E] to a Vec[E]
 func (d Deque[E]) ToVec() Vec[E] {
 	data := Vec_[E](d.Len())

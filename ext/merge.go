@@ -14,6 +14,14 @@ func (m Merges2[T0, T1]) ForEach(fn func(T2[T0, T1])) {
 	}
 }
 
+func (m Merges2[T0, T1]) ForEachWhile(fn func(T2[T0, T1]) bool) {
+	for i := range m.Len() {
+		if !fn(T2_(m.V0[i], m.V1[i])) {
+			break
+		}
+	}
+}
+
 func (m Merges2[T0, T1]) Len() int {
 	return min(m.V0.Len(), m.V1.Len())
 }
@@ -35,6 +43,14 @@ func Merges3_[T0, T1, T2 any](vec0 Vec[T0], vec1 Vec[T1], vec2 Vec[T2]) Merges3[
 func (m Merges3[T0, T1, T2]) ForEach(fn func(T3[T0, T1, T2])) {
 	for i := range m.Len() {
 		fn(T3_(m.V0[i], m.V1[i], m.V2[i]))
+	}
+}
+
+func (m Merges3[T0, T1, T2]) ForEachWhile(fn func(T3[T0, T1, T2]) bool) {
+	for i := range m.Len() {
+		if !fn(T3_(m.V0[i], m.V1[i], m.V2[i])) {
+			break
+		}
 	}
 }
 

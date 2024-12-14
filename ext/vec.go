@@ -33,6 +33,14 @@ func (v Vec[E]) ForEach(fn func(E)) {
 	}
 }
 
+func (v Vec[E]) ForEachWhile(fn func(E) bool) {
+	for _, e := range v {
+		if !fn(e) {
+			break
+		}
+	}
+}
+
 func (v Vec[E]) Len() int {
 	return len(v)
 }
@@ -126,36 +134,53 @@ func (v Vec[E]) Shuffle() {
 	}
 }
 
-func (v Vec[E]) ToReverse() ReverseVec[E] {
-	return ReverseVec[E]{v}
+func (v Vec[E]) ToReverse() RevVec[E] {
+	return RevVec[E]{v}
 }
 
-type ReverseVec[E any] struct {
+type RevVec[E any] struct {
 	Vec[E]
 }
 
-func (v ReverseVec[E]) ForEach(fn func(E)) {
+func (v RevVec[E]) ForEach(fn func(E)) {
 	for i := v.Len(); i > 0; {
 		i -= 1
 		fn(v.Vec[i])
 	}
 }
 
-func (v ReverseVec[E]) Get(index int) Opt[E] {
+func (v RevVec[E]) ForEachWhile(fn func(E) bool) {
+	for i := v.Len(); i > 0; {
+		i -= 1
+		if !fn(v.Vec[i]) {
+			break
+		}
+	}
+}
+
+func (v RevVec[E]) Get(index int) Opt[E] {
 	return v.Vec.Get(v.Len() - index - 1)
 }
 
-type IndexedVec[E any] struct {
+type IdxVec[E any] struct {
 	Vec[E]
 }
 
-func (v Vec[E]) ToIndexed() IndexedVec[E] {
-	return IndexedVec[E]{v}
+func (v Vec[E]) ToIndexed() IdxVec[E] {
+	return IdxVec[E]{v}
 }
 
-func (v IndexedVec[E]) ForEach(fn func(KV[int, E])) {
+func (v IdxVec[E]) ForEach(fn func(KV[int, E])) {
 	for i, e := range v.Vec {
 		fn(KV_(i, e))
+	}
+}
+
+func (v IdxVec[E]) ForEachWhile(fn func(KV[int, E]) bool) {
+	for i, e := range v.Vec {
+		if !fn(KV_(i, e)) {
+			break
+		}
 	}
 }
 

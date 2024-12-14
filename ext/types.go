@@ -28,6 +28,7 @@ type Number interface {
 
 type Iterator[E any] interface {
 	ForEach(func(E))
+	ForEachWhile(func(E) bool)
 	Len() int
 	Empty() bool
 }

@@ -30,6 +30,14 @@ func (s Set[E]) ForEach(fn func(E)) {
 	}
 }
 
+func (s Set[E]) ForEachWhile(fn func(E) bool) {
+	for e := range s {
+		if !fn(e) {
+			break
+		}
+	}
+}
+
 // Len Get the number of elements in the Set[E]
 func (s Set[E]) Len() int {
 	return len(s)

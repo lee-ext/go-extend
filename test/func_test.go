@@ -21,7 +21,7 @@ func TestFunc(t *testing.T) {
 	dict := IntactTo(vec.ToIndexed(), Dict_)
 	fmt.Println(dict)
 
-	vec3 := IntactTo(vec.ToReverse(), Vec_)
+	vec3 := IntactTo(vec.ToRev(), Vec_)
 	fmt.Println(vec3)
 
 	dict1 := MapTo(vec, func(t int64) KV[int64, string] {

@@ -29,6 +29,32 @@ func MapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	return rs
 }
 
+func MapWhile[T, R any, TS Iterator[T]](
+	ts TS, fn func(T) Opt[R]) Vec[R] {
+	rs := Vec_[R](filterLen(ts.Len()))
+	ts.ForEachWhile(func(t T) bool {
+		r, b := fn(t).D()
+		if b {
+			rs = rs.AppendSelf(r)
+		}
+		return b
+	})
+	return rs
+}
+
+func MapWhileTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
+	ts TS, fn func(T) Opt[R], toFn func(int) RS) RS {
+	rs := toFn(filterLen(ts.Len()))
+	ts.ForEachWhile(func(t T) bool {
+		r, b := fn(t).D()
+		if b {
+			rs = rs.AppendSelf(r)
+		}
+		return b
+	})
+	return rs
+}
+
 // Flatten Flattening the Iterator[T] to Vec[T]
 func Flatten[T any, TS Iterator[T], TG Iterator[TS]](tg TG) Vec[T] {
 	rs := Vec_[T](Reduce(tg, 0,
