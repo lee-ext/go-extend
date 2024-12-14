@@ -19,6 +19,6 @@ import "github.com/lhn157953/ext"
 Alternatively, use `go get`:
 
 ```sh
-go get -u github.com/lhn157953/go-extend
+go get -u github.com/lee157953/go-extend
 ```
 
