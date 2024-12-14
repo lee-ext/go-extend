@@ -1,5 +1,7 @@
 # go-extend
 
+A simple golang generic extension library
+
 ## Getting started
 
 ### Prerequisites
