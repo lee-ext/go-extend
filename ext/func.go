@@ -29,6 +29,7 @@ func MapTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	return rs
 }
 
+// MapWhile Convert Iterator[T] to Vec[R] while fn returns false
 func MapWhile[T, R any, TS Iterator[T]](
 	ts TS, fn func(T) Opt[R]) Vec[R] {
 	rs := Vec_[R](filterLen(ts.Len()))
@@ -42,6 +43,7 @@ func MapWhile[T, R any, TS Iterator[T]](
 	return rs
 }
 
+// MapWhileTo Same as MapWhile but supports more containers
 func MapWhileTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	ts TS, fn func(T) Opt[R], toFn func(int) RS) RS {
 	rs := toFn(filterLen(ts.Len()))
