@@ -33,7 +33,7 @@ func (s Set[E]) ForEach(fn func(E)) {
 func (s Set[E]) ForEachWhile(fn func(E) bool) {
 	for e := range s {
 		if !fn(e) {
-			break
+			return
 		}
 	}
 }

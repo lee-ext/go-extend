@@ -36,7 +36,7 @@ func (v Vec[E]) ForEach(fn func(E)) {
 func (v Vec[E]) ForEachWhile(fn func(E) bool) {
 	for _, e := range v {
 		if !fn(e) {
-			break
+			return
 		}
 	}
 }
@@ -179,7 +179,7 @@ func (v IdxVec[E]) ForEach(fn func(KV[int, E])) {
 func (v IdxVec[E]) ForEachWhile(fn func(KV[int, E]) bool) {
 	for i, e := range v.Vec {
 		if !fn(KV_(i, e)) {
-			break
+			return
 		}
 	}
 }

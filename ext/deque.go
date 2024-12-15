@@ -121,18 +121,18 @@ func (d Deque[E]) ForEachWhile(fn func(E) bool) {
 	if d.head > d.tail {
 		for _, e := range d.data[d.head:] {
 			if !fn(e) {
-				break
+				return
 			}
 		}
 		for _, e := range d.data[:d.tail+1] {
 			if !fn(e) {
-				break
+				return
 			}
 		}
 	} else {
 		for _, e := range d.data[d.head : d.tail+1] {
 			if !fn(e) {
-				break
+				return
 			}
 		}
 	}
@@ -143,12 +143,12 @@ func (d Deque[E]) ToSeq() iter.Seq[E] {
 		return func(yield func(E) bool) {
 			for _, e := range d.data[d.head:] {
 				if !yield(e) {
-					break
+					return
 				}
 			}
 			for _, e := range d.data[:d.tail+1] {
 				if !yield(e) {
-					break
+					return
 				}
 			}
 		}
@@ -156,7 +156,7 @@ func (d Deque[E]) ToSeq() iter.Seq[E] {
 		return func(yield func(E) bool) {
 			for _, e := range d.data[d.head : d.tail+1] {
 				if !yield(e) {
-					break
+					return
 				}
 			}
 		}
@@ -168,13 +168,13 @@ func (d Deque[E]) ToSeq2() iter.Seq2[int, E] {
 		return func(yield func(int, E) bool) {
 			for i, e := range d.data[d.head:] {
 				if !yield(i, e) {
-					break
+					return
 				}
 			}
 			offset := len(d.data[d.head:])
 			for i, e := range d.data[:d.tail+1] {
 				if !yield(offset+i, e) {
-					break
+					return
 				}
 			}
 		}
@@ -182,7 +182,7 @@ func (d Deque[E]) ToSeq2() iter.Seq2[int, E] {
 		return func(yield func(int, E) bool) {
 			for i, e := range d.data[d.head : d.tail+1] {
 				if !yield(i, e) {
-					break
+					return
 				}
 			}
 		}

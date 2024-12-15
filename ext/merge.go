@@ -17,7 +17,7 @@ func (m Merges2[T0, T1]) ForEach(fn func(T2[T0, T1])) {
 func (m Merges2[T0, T1]) ForEachWhile(fn func(T2[T0, T1]) bool) {
 	for i := range m.Len() {
 		if !fn(T2_(m.V0[i], m.V1[i])) {
-			break
+			return
 		}
 	}
 }

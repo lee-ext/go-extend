@@ -46,7 +46,7 @@ func (d Dict[K, V]) ForEach(fn func(KV[K, V])) {
 func (d Dict[K, V]) ForEachWhile(fn func(KV[K, V]) bool) {
 	for k, v := range d {
 		if !fn(KV_(k, v)) {
-			break
+			return
 		}
 	}
 }

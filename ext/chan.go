@@ -66,7 +66,7 @@ func (c Receiver[E]) ForEach(fn func(E)) {
 func (c Receiver[E]) ForEachWhile(fn func(E) bool) {
 	for e := range c {
 		if !fn(e) {
-			break
+			return
 		}
 	}
 }

@@ -23,7 +23,7 @@ func (d MDict[K, V]) ForEach(fn func(KV[K, Vec[V]])) {
 func (d MDict[K, V]) ForEachWhile(fn func(KV[K, Vec[V]]) bool) {
 	for k, v := range d {
 		if !fn(KV_(k, v)) {
-			break
+			return
 		}
 	}
 }
