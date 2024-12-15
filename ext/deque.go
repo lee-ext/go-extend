@@ -3,6 +3,7 @@ package ext
 import (
 	"errors"
 	"fmt"
+	"iter"
 	"unsafe"
 )
 
@@ -124,12 +125,65 @@ func (d Deque[E]) ForEachWhile(fn func(E) bool) {
 			}
 		}
 		for _, e := range d.data[:d.tail+1] {
-			fn(e)
+			if !fn(e) {
+				break
+			}
 		}
 	} else {
 		for _, e := range d.data[d.head : d.tail+1] {
 			if !fn(e) {
 				break
+			}
+		}
+	}
+}
+
+func (d Deque[E]) ToSeq() iter.Seq[E] {
+	if d.head > d.tail {
+		return func(yield func(E) bool) {
+			for _, e := range d.data[d.head:] {
+				if !yield(e) {
+					break
+				}
+			}
+			for _, e := range d.data[:d.tail+1] {
+				if !yield(e) {
+					break
+				}
+			}
+		}
+	} else {
+		return func(yield func(E) bool) {
+			for _, e := range d.data[d.head : d.tail+1] {
+				if !yield(e) {
+					break
+				}
+			}
+		}
+	}
+}
+
+func (d Deque[E]) ToSeq2() iter.Seq2[int, E] {
+	if d.head > d.tail {
+		return func(yield func(int, E) bool) {
+			for i, e := range d.data[d.head:] {
+				if !yield(i, e) {
+					break
+				}
+			}
+			offset := len(d.data[d.head:])
+			for i, e := range d.data[:d.tail+1] {
+				if !yield(offset+i, e) {
+					break
+				}
+			}
+		}
+	} else {
+		return func(yield func(int, E) bool) {
+			for i, e := range d.data[d.head : d.tail+1] {
+				if !yield(i, e) {
+					break
+				}
 			}
 		}
 	}
