@@ -103,6 +103,9 @@ func (d Deque[E]) Back() Opt[E] {
 
 // ForEach Traverse the Deque[E]
 func (d Deque[E]) ForEach(fn func(E)) {
+	if d.Empty() {
+		return
+	}
 	if d.head > d.tail {
 		for _, e := range d.data[d.head:] {
 			fn(e)
@@ -118,6 +121,9 @@ func (d Deque[E]) ForEach(fn func(E)) {
 }
 
 func (d Deque[E]) ForEachWhile(fn func(E) bool) {
+	if d.Empty() {
+		return
+	}
 	if d.head > d.tail {
 		for _, e := range d.data[d.head:] {
 			if !fn(e) {
@@ -139,6 +145,9 @@ func (d Deque[E]) ForEachWhile(fn func(E) bool) {
 }
 
 func (d Deque[E]) ToSeq() iter.Seq[E] {
+	if d.Empty() {
+		return func(func(E) bool) {}
+	}
 	if d.head > d.tail {
 		return func(yield func(E) bool) {
 			for _, e := range d.data[d.head:] {
@@ -152,18 +161,20 @@ func (d Deque[E]) ToSeq() iter.Seq[E] {
 				}
 			}
 		}
-	} else {
-		return func(yield func(E) bool) {
-			for _, e := range d.data[d.head : d.tail+1] {
-				if !yield(e) {
-					return
-				}
+	}
+	return func(yield func(E) bool) {
+		for _, e := range d.data[d.head : d.tail+1] {
+			if !yield(e) {
+				return
 			}
 		}
 	}
 }
 
 func (d Deque[E]) ToSeq2() iter.Seq2[int, E] {
+	if d.Empty() {
+		return func(func(int, E) bool) {}
+	}
 	if d.head > d.tail {
 		return func(yield func(int, E) bool) {
 			for i, e := range d.data[d.head:] {
@@ -178,12 +189,11 @@ func (d Deque[E]) ToSeq2() iter.Seq2[int, E] {
 				}
 			}
 		}
-	} else {
-		return func(yield func(int, E) bool) {
-			for i, e := range d.data[d.head : d.tail+1] {
-				if !yield(i, e) {
-					return
-				}
+	}
+	return func(yield func(int, E) bool) {
+		for i, e := range d.data[d.head : d.tail+1] {
+			if !yield(i, e) {
+				return
 			}
 		}
 	}
@@ -191,6 +201,9 @@ func (d Deque[E]) ToSeq2() iter.Seq2[int, E] {
 
 // ToVec Convert a Deque[E] to a Vec[E]
 func (d Deque[E]) ToVec() Vec[E] {
+	if d.Empty() {
+		return Vec[E]{}
+	}
 	data := Vec_[E](d.Len())
 	if d.head > d.tail {
 		data.Appends(d.data[d.head:]...)
@@ -245,19 +258,24 @@ func change(index, cap_, change int) int {
 }
 
 func (d Deque[E]) grow() {
-	data := make([]E, max(d.Cap()*2, 1))
-	len_ := d.Len()
-	if d.head > d.tail {
-		headData := d.data[d.head:]
-		copy(data, headData)
-		copy(data[len(headData):], d.data[:d.tail+1])
-		d.data = data
+	cap_ := d.Cap()
+	if cap_ > 0 {
+		data := make([]E, cap_*2)
+		len_ := d.Len()
+		if d.head > d.tail {
+			headData := d.data[d.head:]
+			copy(data, headData)
+			copy(data[len(headData):], d.data[:d.tail+1])
+			d.data = data
+		} else {
+			copy(data, d.data[d.head:d.tail+1])
+			d.data = data
+		}
+		d.head = 0
+		d.tail = len_ - 1
 	} else {
-		copy(data, d.data[d.head:d.tail+1])
-		d.data = data
+		d.data = make([]E, 1)
 	}
-	d.head = 0
-	d.tail = len_ - 1
 }
 
 func (d Deque[E]) unsafeEditLen(len int) {
