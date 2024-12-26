@@ -7,8 +7,7 @@ import (
 
 const (
 	_PromisePending   = 0
-	_PromiseAssigning = 1
-	_PromiseCompleted = 2
+	_PromiseCompleted = 1
 	_PromiseCanceled  = -1
 )
 
@@ -28,7 +27,7 @@ type PromiseRes[T any] struct {
 }
 
 func (p PromiseRes[T]) IsPending() bool {
-	return p.status == _PromisePending || p.status == _PromiseAssigning
+	return p.status == _PromisePending
 }
 func (p PromiseRes[T]) IsCanceled() bool {
 	return p.status == _PromiseCanceled
@@ -85,6 +84,8 @@ func (p Promise[T]) Cancel() bool {
 }
 
 func (p Promise[T]) TryGet() PromiseRes[T] {
+	p.locker.Lock()
+	defer p.locker.Unlock()
 	return p.res
 }
 
