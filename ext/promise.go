@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	PromisePending   = 0
-	PromiseAssigning = 1
-	PromiseCompleted = 2
-	PromiseCanceled  = -1
+	_PromisePending   = 0
+	_PromiseAssigning = 1
+	_PromiseCompleted = 2
+	_PromiseCanceled  = -1
 )
 
 type Promise[T any] struct {
@@ -24,18 +24,18 @@ type _PromisePin[T any] struct {
 }
 
 type PromiseRes[T any] struct {
-	Status int8
+	status int8
 	result T
 }
 
 func (p PromiseRes[T]) IsPending() bool {
-	return p.Status == PromisePending || p.Status == PromiseAssigning
+	return p.status == _PromisePending || p.status == _PromiseAssigning
 }
 func (p PromiseRes[T]) IsCanceled() bool {
-	return p.Status == PromiseCanceled
+	return p.status == _PromiseCanceled
 }
 func (p PromiseRes[T]) IsCompleted() bool {
-	return p.Status == PromiseCompleted
+	return p.status == _PromiseCompleted
 }
 
 func (p PromiseRes[T]) Get() T {
@@ -67,15 +67,15 @@ func (p PromiseRes[T]) GetElse(fn func() T) T {
 }
 
 func (p Promise[T]) Await() PromiseRes[T] {
-	if p.status.Load() == PromisePending {
+	if p.status.Load() == _PromisePending {
 		p.waiter.Wait()
 	}
 	return PromiseRes[T]{int8(p.status.Load()), p.result}
 }
 
 func (p Promise[T]) Cancel() bool {
-	if p.status.Load() == PromisePending {
-		p.status.Store(PromiseCanceled)
+	if p.status.Load() == _PromisePending {
+		p.status.Store(_PromiseCanceled)
 		p.waiter.Done()
 		return true
 	}
@@ -83,21 +83,17 @@ func (p Promise[T]) Cancel() bool {
 }
 
 func (p Promise[T]) TryGet() PromiseRes[T] {
-	status, result := p.status.Load(), p.result
-	for status == PromiseAssigning {
-		status = p.status.Load()
-	}
-	return PromiseRes[T]{int8(status), result}
+	return PromiseRes[T]{int8(p.status.Load()), p.result}
 }
 
 func Promise_[T any]() (Promise[T], func(T)) {
 	p := Promise[T]{&_PromisePin[T]{}}
 	p.waiter.Add(1)
 	f := func(t T) {
-		if p.status.Load() == PromisePending {
-			p.status.Store(PromiseAssigning)
+		if p.status.Load() == _PromisePending {
+			p.status.Store(_PromiseAssigning)
 			p.result = t
-			p.status.Store(PromiseCompleted)
+			p.status.Store(_PromiseCompleted)
 			p.waiter.Done()
 		}
 	}
