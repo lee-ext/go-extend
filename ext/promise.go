@@ -3,7 +3,6 @@ package ext
 import (
 	"errors"
 	"sync"
-	"sync/atomic"
 )
 
 const (
@@ -19,8 +18,8 @@ type Promise[T any] struct {
 
 type _PromisePin[T any] struct {
 	waiter sync.WaitGroup
-	status atomic.Int32
-	result T
+	locker sync.Mutex
+	res    PromiseRes[T]
 }
 
 type PromiseRes[T any] struct {
@@ -67,33 +66,39 @@ func (p PromiseRes[T]) GetElse(fn func() T) T {
 }
 
 func (p Promise[T]) Await() PromiseRes[T] {
-	if p.status.Load() == _PromisePending {
-		p.waiter.Wait()
-	}
-	return PromiseRes[T]{int8(p.status.Load()), p.result}
+	p.waiter.Wait()
+	return p.res
 }
 
 func (p Promise[T]) Cancel() bool {
-	if p.status.Load() == _PromisePending {
-		p.status.Store(_PromiseCanceled)
+	ok := false
+	if p.res.status == _PromisePending {
+		p.locker.Lock()
+		if p.res.status == _PromisePending {
+			p.res.status = _PromiseCanceled
+			ok = true
+		}
+		p.locker.Unlock()
 		p.waiter.Done()
-		return true
 	}
-	return false
+	return ok
 }
 
 func (p Promise[T]) TryGet() PromiseRes[T] {
-	return PromiseRes[T]{int8(p.status.Load()), p.result}
+	return p.res
 }
 
 func Promise_[T any]() (Promise[T], func(T)) {
 	p := Promise[T]{&_PromisePin[T]{}}
 	p.waiter.Add(1)
 	f := func(t T) {
-		if p.status.Load() == _PromisePending {
-			p.status.Store(_PromiseAssigning)
-			p.result = t
-			p.status.Store(_PromiseCompleted)
+		if p.res.status == _PromisePending {
+			p.locker.Lock()
+			if p.res.status == _PromisePending {
+				p.res.result = t
+				p.res.status = _PromiseCompleted
+			}
+			p.locker.Unlock()
 			p.waiter.Done()
 		}
 	}
