@@ -8,7 +8,8 @@ import (
 
 const (
 	PromisePending   = 0
-	PromiseCompleted = 1
+	PromiseAssigning = 1
+	PromiseCompleted = 2
 	PromiseCanceled  = -1
 )
 
@@ -28,7 +29,7 @@ type PromiseRes[T any] struct {
 }
 
 func (p PromiseRes[T]) IsPending() bool {
-	return p.Status == PromisePending
+	return p.Status == PromisePending || p.Status == PromiseAssigning
 }
 func (p PromiseRes[T]) IsCanceled() bool {
 	return p.Status == PromiseCanceled
@@ -82,7 +83,11 @@ func (p Promise[T]) Cancel() bool {
 }
 
 func (p Promise[T]) TryGet() PromiseRes[T] {
-	return PromiseRes[T]{int8(p.status.Load()), p.result}
+	status, result := p.status.Load(), p.result
+	for status == PromiseAssigning {
+		status = p.status.Load()
+	}
+	return PromiseRes[T]{int8(status), result}
 }
 
 func Promise_[T any]() (Promise[T], func(T)) {
@@ -90,8 +95,9 @@ func Promise_[T any]() (Promise[T], func(T)) {
 	p.waiter.Add(1)
 	f := func(t T) {
 		if p.status.Load() == PromisePending {
-			p.status.Store(PromiseCompleted)
+			p.status.Store(PromiseAssigning)
 			p.result = t
+			p.status.Store(PromiseCompleted)
 			p.waiter.Done()
 		}
 	}
