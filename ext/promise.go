@@ -1,8 +1,8 @@
 package ext
 
 import (
-	"errors"
 	"sync"
+	"sync/atomic"
 )
 
 const (
@@ -16,65 +16,40 @@ type Promise[T any] struct {
 }
 
 type _PromisePin[T any] struct {
-	waiter sync.WaitGroup
 	locker sync.Mutex
-	res    PromiseRes[T]
-}
-
-type PromiseRes[T any] struct {
+	waiter sync.WaitGroup
 	status int8
 	result T
 }
 
-func (p PromiseRes[T]) IsPending() bool {
+func (p Promise[T]) Pending() bool {
+	p.locker.Lock()
+	defer p.locker.Unlock()
 	return p.status == _PromisePending
 }
-func (p PromiseRes[T]) IsCanceled() bool {
+
+func (p Promise[T]) Canceled() bool {
+	p.locker.Lock()
+	defer p.locker.Unlock()
 	return p.status == _PromiseCanceled
 }
-func (p PromiseRes[T]) IsCompleted() bool {
+
+func (p Promise[T]) Completed() bool {
+	p.locker.Lock()
+	defer p.locker.Unlock()
 	return p.status == _PromiseCompleted
 }
 
-func (p PromiseRes[T]) Get() T {
-	if p.IsCompleted() {
-		return p.result
-	}
-	panic(errors.New("option is none"))
-}
-
-func (p PromiseRes[T]) Get_() T {
-	if p.IsCompleted() {
-		return p.result
-	}
-	return *new(T)
-}
-
-func (p PromiseRes[T]) GetOr(t T) T {
-	if p.IsCompleted() {
-		return p.result
-	}
-	return t
-}
-
-func (p PromiseRes[T]) GetElse(fn func() T) T {
-	if p.IsCompleted() {
-		return p.result
-	}
-	return fn()
-}
-
-func (p Promise[T]) Await() PromiseRes[T] {
-	p.waiter.Wait()
-	return p.res
+func (p Promise[T]) Done() bool {
+	return !p.Pending()
 }
 
 func (p Promise[T]) Cancel() bool {
 	ok := false
-	if p.res.status == _PromisePending {
+	if p.status == _PromisePending {
 		p.locker.Lock()
-		if p.res.status == _PromisePending {
-			p.res.status = _PromiseCanceled
+		if p.status == _PromisePending {
+			p.status = _PromiseCanceled
 			ok = true
 		}
 		p.locker.Unlock()
@@ -83,25 +58,51 @@ func (p Promise[T]) Cancel() bool {
 	return ok
 }
 
-func (p Promise[T]) TryGet() PromiseRes[T] {
-	p.locker.Lock()
-	defer p.locker.Unlock()
-	return p.res
+func (p Promise[T]) Complete(t T) bool {
+	ok := false
+	if p.status == _PromisePending {
+		p.locker.Lock()
+		if p.status == _PromisePending {
+			p.result = t
+			p.status = _PromiseCompleted
+			ok = true
+		}
+		p.locker.Unlock()
+		p.waiter.Done()
+	}
+	return ok
 }
 
-func Promise_[T any]() (Promise[T], func(T)) {
+func (p Promise[T]) Await() Opt[T] {
+	p.waiter.Wait()
+	return Opt[T]{p.result, p.status == _PromiseCompleted}
+}
+
+func (p Promise[T]) TryGet() Opt[T] {
+	p.locker.Lock()
+	defer p.locker.Unlock()
+	return Opt[T]{p.result, p.status == _PromiseCompleted}
+}
+
+func Promise_[T any]() Promise[T] {
 	p := Promise[T]{&_PromisePin[T]{}}
 	p.waiter.Add(1)
-	f := func(t T) {
-		if p.res.status == _PromisePending {
-			p.locker.Lock()
-			if p.res.status == _PromisePending {
-				p.res.result = t
-				p.res.status = _PromiseCompleted
-			}
-			p.locker.Unlock()
-			p.waiter.Done()
-		}
-	}
-	return p, f
+	return p
+}
+
+type Canceler struct {
+	b *atomic.Bool
+}
+
+func (c Canceler) Cancel() {
+	c.b.Store(true)
+}
+
+func (c Canceler) Canceled() bool {
+	return c.b.Load()
+}
+
+func Canceller_() Canceler {
+	c := Canceler{new(atomic.Bool)}
+	return c
 }

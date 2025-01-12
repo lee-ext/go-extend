@@ -29,10 +29,10 @@ func (a Actor) receive(deferFn func(any)) {
 
 // Launch a function to the actor
 /*If you need to get the returned result, you can use Promise[T] or chan
-p, f := Promise_[T]()
+p := Promise_[T]()
 actor.Launch(func() {
 	t := ...
-	f(t)
+	p.Complete(t)
 })
 return p
 */
