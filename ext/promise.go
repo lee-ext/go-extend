@@ -45,32 +45,30 @@ func (p Promise[T]) Done() bool {
 }
 
 func (p Promise[T]) Cancel() bool {
-	ok := false
 	if p.status == _PromisePending {
 		p.locker.Lock()
+		defer p.waiter.Done()
+		defer p.locker.Unlock()
 		if p.status == _PromisePending {
 			p.status = _PromiseCanceled
-			ok = true
+			return true
 		}
-		p.locker.Unlock()
-		p.waiter.Done()
 	}
-	return ok
+	return false
 }
 
 func (p Promise[T]) Complete(t T) bool {
-	ok := false
 	if p.status == _PromisePending {
 		p.locker.Lock()
+		defer p.waiter.Done()
+		defer p.locker.Unlock()
 		if p.status == _PromisePending {
 			p.result = t
 			p.status = _PromiseCompleted
-			ok = true
+			return true
 		}
-		p.locker.Unlock()
-		p.waiter.Done()
 	}
-	return ok
+	return false
 }
 
 func (p Promise[T]) Await() Opt[T] {
