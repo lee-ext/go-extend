@@ -147,9 +147,9 @@ func ResNone[T any]() Res[T] {
 	return Res[T]{nil}
 }
 
-func ResMap[T, R any](res Res[T], fn func(T) R) Res[R] {
+func ResMap[T, R any](res Res[T], fn func(T) Res[R]) Res[R] {
 	if res.IsOk() {
-		return ResOk(fn(res.Get()))
+		return fn(res.Get())
 	}
 	return ResErr[R](res.Err())
 }
