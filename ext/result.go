@@ -4,24 +4,29 @@ import (
 	"errors"
 )
 
-type CuRes[T any] struct {
+const (
+	_ResOkMsg   = "result is ok"
+	_ResNoneMsg = "result is none"
+)
+
+type Res[T any] struct {
 	v any
 }
 
-func (r CuRes[T]) IsOk() bool {
+func (r Res[T]) IsOk() bool {
 	_, b := r.v.(T)
 	return b
 }
 
-func (r CuRes[T]) IsErr() bool {
+func (r Res[T]) IsErr() bool {
 	return !r.IsOk()
 }
 
-func (r CuRes[T]) IsNone() bool {
+func (r Res[T]) IsNone() bool {
 	return r.v == nil
 }
 
-func (r CuRes[T]) ToOpt() Opt[T] {
+func (r Res[T]) ToOpt() Opt[T] {
 	switch v := r.v.(type) {
 	case T:
 		return Some(v)
@@ -30,18 +35,18 @@ func (r CuRes[T]) ToOpt() Opt[T] {
 	}
 }
 
-func (r CuRes[T]) Get() T {
+func (r Res[T]) Get() T {
 	switch v := r.v.(type) {
 	case T:
 		return v
 	case error:
 		panic(v)
 	default:
-		panic(errors.New("data is none"))
+		panic(errors.New(_ResNoneMsg))
 	}
 }
 
-func (r CuRes[T]) Get_() T {
+func (r Res[T]) Get_() T {
 	switch v := r.v.(type) {
 	case T:
 		return v
@@ -50,7 +55,7 @@ func (r CuRes[T]) Get_() T {
 	}
 }
 
-func (r CuRes[T]) GetOr(t T) T {
+func (r Res[T]) GetOr(t T) T {
 	switch v := r.v.(type) {
 	case T:
 		return v
@@ -59,7 +64,7 @@ func (r CuRes[T]) GetOr(t T) T {
 	}
 }
 
-func (r CuRes[T]) GetElse(fn func() T) T {
+func (r Res[T]) GetElse(fn func() T) T {
 	switch v := r.v.(type) {
 	case T:
 		return v
@@ -68,83 +73,83 @@ func (r CuRes[T]) GetElse(fn func() T) T {
 	}
 }
 
-func (r CuRes[T]) GetErr() error {
+func (r Res[T]) Err() error {
 	switch v := r.v.(type) {
 	case T:
-		return errors.New("result is ok")
+		return errors.New(_ResOkMsg)
 	case error:
 		return v
 	default:
-		return errors.New("data is none")
+		return errors.New(_ResNoneMsg)
 	}
 }
 
-func (r CuRes[T]) Map(fn func(T)) CuRes[T] {
+func (r Res[T]) Map(fn func(T)) Res[T] {
 	if v, b := r.v.(T); b {
 		fn(v)
 	}
 	return r
 }
 
-func (r CuRes[T]) ErrMap(fn func(err error)) CuRes[T] {
+func (r Res[T]) ErrMap(fn func(err error)) Res[T] {
 	switch v := r.v.(type) {
 	case T:
 		break
 	case error:
 		fn(v)
 	default:
-		fn(errors.New("data is none"))
+		fn(errors.New(_ResNoneMsg))
 	}
 	return r
 }
 
-func (r CuRes[T]) D() (T, error) {
+func (r Res[T]) D() (T, error) {
 	switch v := r.v.(type) {
 	case T:
 		return v, nil
 	case error:
 		return *new(T), v
 	default:
-		return *new(T), errors.New("data is none")
+		return *new(T), errors.New(_ResNoneMsg)
 	}
 }
 
-func CuRes_[T any](t T, e error) CuRes[T] {
+func Res_[T any](t T, e error) Res[T] {
 	if e == nil {
-		return CuRes[T]{t}
+		return Res[T]{t}
 	}
-	return CuRes[T]{e}
+	return Res[T]{e}
 }
 
-func CuResOpt[T any](t T, b bool, e error) CuRes[T] {
+func ResOpt[T any](t T, b bool, e error) Res[T] {
 	if e == nil && b {
-		return CuRes[T]{t}
+		return Res[T]{t}
 	}
-	return CuRes[T]{e}
+	return Res[T]{e}
 }
 
-func CuResUnit(e error) CuRes[Unit] {
+func ResUnit(e error) Res[Unit] {
 	if e == nil {
-		return CuRes[Unit]{Unit{}}
+		return Res[Unit]{Unit{}}
 	}
-	return CuRes[Unit]{e}
+	return Res[Unit]{e}
 }
 
-func CuOk[T any](t T) CuRes[T] {
-	return CuRes[T]{t}
+func ResOk[T any](t T) Res[T] {
+	return Res[T]{t}
 }
 
-func CuErr[T any](e error) CuRes[T] {
-	return CuRes[T]{e}
+func ResErr[T any](e error) Res[T] {
+	return Res[T]{e}
 }
 
-func CuNone[T any]() CuRes[T] {
-	return CuRes[T]{errors.New("data is none")}
+func ResNone[T any]() Res[T] {
+	return Res[T]{nil}
 }
 
-func CuResTo[T, R any](res CuRes[T], fn func(T) R) CuRes[R] {
+func ResMap[T, R any](res Res[T], fn func(T) R) Res[R] {
 	if res.IsOk() {
-		return CuOk(fn(res.Get()))
+		return ResOk(fn(res.Get()))
 	}
-	return CuErr[R](res.GetErr())
+	return ResErr[R](res.Err())
 }
