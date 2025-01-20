@@ -2,7 +2,6 @@ package ext
 
 import (
 	"encoding/binary"
-	"unsafe"
 )
 
 type Bytes []byte
@@ -33,16 +32,17 @@ func (b Bytes) ForEachWhile(fn func(byte) bool) {
 	}
 }
 
-func (b Bytes) ToString() string {
-	return string(b)
+func (b Bytes) ReadBytes(offset, len int) Bytes {
+	return b[offset:len]
 }
 
-func (b Bytes) CastString() string {
-	return unsafe.String(unsafe.SliceData(b), b.Len())
-}
-
-func (b Bytes) ReadBytes(start, end int) Bytes {
-	return b[start:end]
+func (b Bytes) ReadString(offset, len int, copy bool) string {
+	bytes := b.ReadBytes(offset, len)
+	if copy {
+		return string(bytes)
+	} else {
+		return BytesCastStr(bytes)
+	}
 }
 
 func (b Bytes) WriteBytes(offset int, bytes Bytes) {
@@ -60,6 +60,7 @@ func (b Bytes) ReadInt8(offset int) int8 {
 func (b Bytes) ReadInt16(offset int) int16 {
 	return UnsafeCast[int16](binary.BigEndian.Uint16(b[offset:]))
 }
+
 func (b Bytes) ReadInt32(offset int) int32 {
 	return UnsafeCast[int32](binary.BigEndian.Uint32(b[offset:]))
 }
@@ -99,6 +100,7 @@ func (b Bytes) WriteInt8(offset int, value int8) {
 func (b Bytes) WriteInt16(offset int, value int16) {
 	binary.BigEndian.PutUint16(b[offset:], UnsafeCast[uint16](value))
 }
+
 func (b Bytes) WriteInt32(offset int, value int32) {
 	binary.BigEndian.PutUint32(b[offset:], UnsafeCast[uint32](value))
 }
@@ -134,6 +136,7 @@ func (b Bytes) WriteFloat64(offset int, value float64) {
 func (b Bytes) ReadInt16Le(offset int) int16 {
 	return UnsafeCast[int16](binary.LittleEndian.Uint16(b[offset:]))
 }
+
 func (b Bytes) ReadInt32Le(offset int) int32 {
 	return UnsafeCast[int32](binary.LittleEndian.Uint32(b[offset:]))
 }
@@ -165,6 +168,7 @@ func (b Bytes) ReadFloat64Le(offset int) float64 {
 func (b Bytes) WriteInt16Le(offset int, value int16) {
 	binary.LittleEndian.PutUint16(b[offset:], UnsafeCast[uint16](value))
 }
+
 func (b Bytes) WriteInt32Le(offset int, value int32) {
 	binary.LittleEndian.PutUint32(b[offset:], UnsafeCast[uint32](value))
 }
