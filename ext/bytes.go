@@ -186,10 +186,6 @@ func (b Bytes) WriteInt64Le(offset int, value int64) {
 	_LE.PutUint64(b[offset:], UnsafeCast[uint64](value))
 }
 
-func (b Bytes) WriteUInt8Le(offset int, value uint8) {
-	b[offset] = value
-}
-
 func (b Bytes) WriteUInt16Le(offset int, value uint16) {
 	_LE.PutUint16(b[offset:], value)
 }
