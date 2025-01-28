@@ -10,7 +10,7 @@ func PanicMsg(msg string) {
 
 func Try(err error) {
 	if err != nil {
-		PanicMsg(err.Error())
+		panic(err)
 	}
 }
 
