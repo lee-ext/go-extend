@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// DefaultDeferFn example
-func DefaultDeferFn(r any) {
+// DeferFn_ example
+func DeferFn_(r any) {
 	switch e := r.(type) {
 	case nil:
 		break

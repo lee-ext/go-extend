@@ -8,7 +8,7 @@ import (
 )
 
 func TestActor(t *testing.T) {
-	actor := ext.Actor_(8, ext.DefaultDeferFn)
+	actor := ext.Actor_(8, ext.DeferFn_)
 	defer actor.Close()
 	for i := range 5 {
 		actor.Launch(func() {
@@ -18,9 +18,9 @@ func TestActor(t *testing.T) {
 			println(fmt.Printf("task: %v\n", i))
 		})
 	}
-	p, fn := ext.Promise_[string](0)
+	p := ext.Promise_[string]()
 	actor.Launch(func() {
-		fn("hello actor")
+		p.Complete("hello actor")
 	})
 	println(p.Await().Get())
 	time.Sleep(time.Second)

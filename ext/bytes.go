@@ -6,6 +6,10 @@ import (
 
 type Bytes []byte
 
+func Bytes_(len int) Bytes {
+	return make([]byte, len)
+}
+
 func (b Bytes) Len() int {
 	return len(b)
 }
@@ -33,7 +37,7 @@ func (b Bytes) ForEachWhile(fn func(byte) bool) {
 }
 
 func (b Bytes) ReadBytes(offset, len int) Bytes {
-	return b[offset:len]
+	return b[offset : offset+len]
 }
 
 func (b Bytes) ReadString(offset, len int, copy bool) string {
