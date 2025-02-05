@@ -18,26 +18,20 @@ type Promise[T any] struct {
 type _PromisePin[T any] struct {
 	locker sync.Mutex
 	waiter sync.WaitGroup
-	status int8
+	status atomic.Int32
 	result T
 }
 
 func (p Promise[T]) Pending() bool {
-	p.locker.Lock()
-	defer p.locker.Unlock()
-	return p.status == _PromisePending
+	return p.status.Load() == _PromisePending
 }
 
 func (p Promise[T]) Canceled() bool {
-	p.locker.Lock()
-	defer p.locker.Unlock()
-	return p.status == _PromiseCanceled
+	return p.status.Load() == _PromiseCanceled
 }
 
 func (p Promise[T]) Completed() bool {
-	p.locker.Lock()
-	defer p.locker.Unlock()
-	return p.status == _PromiseCompleted
+	return p.status.Load() == _PromiseCompleted
 }
 
 func (p Promise[T]) Done() bool {
@@ -45,12 +39,12 @@ func (p Promise[T]) Done() bool {
 }
 
 func (p Promise[T]) Cancel() bool {
-	if p.status == _PromisePending {
+	if p.status.Load() == _PromisePending {
 		p.locker.Lock()
 		defer p.waiter.Done()
 		defer p.locker.Unlock()
-		if p.status == _PromisePending {
-			p.status = _PromiseCanceled
+		if p.status.Load() == _PromisePending {
+			p.status.Store(_PromiseCanceled)
 			return true
 		}
 	}
@@ -58,13 +52,13 @@ func (p Promise[T]) Cancel() bool {
 }
 
 func (p Promise[T]) Complete(t T) bool {
-	if p.status == _PromisePending {
+	if p.status.Load() == _PromisePending {
 		p.locker.Lock()
 		defer p.waiter.Done()
 		defer p.locker.Unlock()
-		if p.status == _PromisePending {
+		if p.status.Load() == _PromisePending {
 			p.result = t
-			p.status = _PromiseCompleted
+			p.status.Store(_PromiseCompleted)
 			return true
 		}
 	}
@@ -73,16 +67,11 @@ func (p Promise[T]) Complete(t T) bool {
 
 func (p Promise[T]) Await() Opt[T] {
 	p.waiter.Wait()
-	if p.status == _PromiseCompleted {
-		return Some(p.result)
-	}
-	return None[T]()
+	return p.TryGet()
 }
 
 func (p Promise[T]) TryGet() Opt[T] {
-	p.locker.Lock()
-	defer p.locker.Unlock()
-	if p.status == _PromiseCompleted {
+	if p.status.Load() == _PromiseCompleted {
 		return Some(p.result)
 	}
 	return None[T]()
