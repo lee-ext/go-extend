@@ -73,13 +73,19 @@ func (p Promise[T]) Complete(t T) bool {
 
 func (p Promise[T]) Await() Opt[T] {
 	p.waiter.Wait()
-	return Opt[T]{p.result, p.status == _PromiseCompleted}
+	if p.status == _PromiseCompleted {
+		return Some(p.result)
+	}
+	return None[T]()
 }
 
 func (p Promise[T]) TryGet() Opt[T] {
 	p.locker.Lock()
 	defer p.locker.Unlock()
-	return Opt[T]{p.result, p.status == _PromiseCompleted}
+	if p.status == _PromiseCompleted {
+		return Some(p.result)
+	}
+	return None[T]()
 }
 
 func Promise_[T any]() Promise[T] {
