@@ -11,12 +11,12 @@ func UnsafeCast[R, T any](t T) R {
 }
 
 // BytesCastStr 为了减少内存copy 使用的不安全转换 谨慎使用 传入的bytes不允许再做修改
-func BytesCastStr[T ~[]byte](bytes T) string {
+func BytesCastStr(bytes []byte) string {
 	return unsafe.String(unsafe.SliceData(bytes), len(bytes))
 }
 
 // StrCastBytes 为了减少内存copy 使用的不安全转换 谨慎使用
-func StrCastBytes[T ~string](str T) []byte {
+func StrCastBytes(str string) []byte {
 	return unsafe.Slice(unsafe.StringData(string(str)), len(str))
 }
 
