@@ -4,7 +4,7 @@ type Sender[E any] chan<- E
 
 type Receiver[E any] <-chan E
 
-func Chan_[E any](cap int) (Sender[E], Receiver[E]) {
+func Chan_[E any](cap int) (sx Sender[E], rx Receiver[E]) {
 	ch := make(chan E, cap)
 	return ch, ch
 }

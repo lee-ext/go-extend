@@ -24,7 +24,7 @@ type Dict[K comparable, V any] map[K]V
 
 // Dict_ Create a Dict[K, V] with a specified capacity
 func Dict_[K comparable, V any](cap int) Dict[K, V] {
-	return make(map[K]V, cap)
+	return make(Dict[K, V], cap)
 }
 
 // DictOf Create a Dict[K, V] that contains the specified keys and values

@@ -11,7 +11,7 @@ type Set[E comparable] map[E]Unit
 
 // Set_ Create a Set[E] with a specified capacity
 func Set_[E comparable](cap int) Set[E] {
-	return make(map[E]Unit, cap)
+	return make(Set[E], cap)
 }
 
 // SetOf Create a Set[E] that contains the specified elements

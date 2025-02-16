@@ -9,7 +9,7 @@ import (
 type Vec[E any] []E
 
 func Vec_[E any](cap int) Vec[E] {
-	return make([]E, 0, cap)
+	return make(Vec[E], 0, cap)
 }
 
 func VecInit[E any](len_ int, fn_ ...func(int) E) Vec[E] {
