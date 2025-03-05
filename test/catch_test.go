@@ -3,8 +3,9 @@ package test
 import (
 	"errors"
 	"fmt"
-	. "github.com/lee157953/go-extend/ext"
 	"testing"
+
+	. "github.com/lee157953/go-extend/ext"
 )
 
 var _Err = errors.New("my err")
@@ -42,7 +43,7 @@ func CatchErr(fn func()) (err error) {
 		case error:
 			err = r
 		default:
-			err = errors.New(fmt.Sprintf("unknown err: %#v", r))
+			err = fmt.Errorf("unknown err: %#v", r)
 		}
 	}()
 	fn()

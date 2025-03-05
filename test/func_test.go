@@ -30,10 +30,10 @@ func TestFunc(t *testing.T) {
 	fmt.Println(dict1)
 
 	group := VecOf(VecOf(1, 2, 3), VecOf(4, 5, 6), VecOf(7, 8, 9))
-	vec4 := Flatten[int](group)
+	vec4 := Flatten(group)
 	fmt.Println(vec4)
 
-	deque := FlattenTo[int](group, Deque_)
+	deque := FlattenTo(group, Deque_)
 	fmt.Println(deque)
 
 	group1 := VecOf("hello", " ", "world")
