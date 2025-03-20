@@ -2,6 +2,7 @@ package ext
 
 import (
 	"errors"
+	"fmt"
 )
 
 const (
@@ -30,8 +31,12 @@ func (r Res[T]) ToOpt() Opt[T] {
 	switch v := r.v.(type) {
 	case T:
 		return Some(v)
-	default:
+	case nil:
 		return None[T]()
+	case error:
+		panic(v)
+	default:
+		panic(fmt.Errorf("unknown type: %#v", v))
 	}
 }
 
@@ -41,8 +46,10 @@ func (r Res[T]) Get() T {
 		return v
 	case error:
 		panic(v)
-	default:
+	case nil:
 		panic(errors.New(_ResNoneMsg))
+	default:
+		panic(fmt.Errorf("unknown type: %#v", v))
 	}
 }
 

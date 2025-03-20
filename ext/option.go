@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+const _OptNoneMsg = "option is none"
+
 type Opt[T any] struct {
 	v T
 	b bool
@@ -46,7 +48,7 @@ func (o Opt[T]) Get() T {
 	if o.IsSome() {
 		return o.v
 	}
-	panic(errors.New("option is none"))
+	panic(errors.New(_OptNoneMsg))
 }
 
 // Get_ 获取值 如果为none 则会返回初始值
@@ -118,7 +120,7 @@ func (o NzOpt[T]) Get() T {
 	if o.IsSome() {
 		return o.v
 	}
-	panic(errors.New("option is none"))
+	panic(errors.New(_OptNoneMsg))
 }
 
 func (o NzOpt[T]) GetOr(t T) T {
