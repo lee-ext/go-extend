@@ -1,13 +1,5 @@
 package ext
 
-import (
-	"errors"
-)
-
-func PanicMsg(msg string) {
-	panic(errors.New(msg))
-}
-
 func Try(err error) {
 	if err != nil {
 		panic(err)
