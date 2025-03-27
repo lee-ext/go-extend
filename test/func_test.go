@@ -14,26 +14,26 @@ func TestFunc(t *testing.T) {
 	})
 	fmt.Println(vec1)
 
-	set := IntactTo(vec, Set_)
+	set := IntactTo(vec, Set_[int64])
 	fmt.Println(set.Contains(5))
 	fmt.Println(set)
 
-	dict := IntactTo(vec.ToIndexed(), Dict_)
+	dict := IntactTo(vec.ToIndexed(), Dict_[int, int64])
 	fmt.Println(dict)
 
-	vec3 := IntactTo(vec.ToReverse(), Vec_)
+	vec3 := IntactTo(vec.ToReverse(), Vec_[int64])
 	fmt.Println(vec3)
 
 	dict1 := MapTo(vec, func(t int64) KV[int64, string] {
 		return KV_(t, fmt.Sprintf("num:%d", t))
-	}, Dict_)
+	}, Dict_[int64, string])
 	fmt.Println(dict1)
 
 	group := VecOf(VecOf(1, 2, 3), VecOf(4, 5, 6), VecOf(7, 8, 9))
 	vec4 := Flatten(group)
 	fmt.Println(vec4)
 
-	deque := FlattenTo(group, Deque_)
+	deque := FlattenTo(group, Deque_[int])
 	fmt.Println(deque)
 
 	group1 := VecOf("hello", " ", "world")
@@ -44,7 +44,7 @@ func TestFunc(t *testing.T) {
 
 	set1 := FlatMapTo(group1, func(t string) Vec[byte] {
 		return Vec[byte](t)
-	}, Set_)
+	}, Set_[byte])
 	fmt.Println(set1)
 
 	vec6 := Filter(vec, func(t int64) bool {
@@ -54,7 +54,7 @@ func TestFunc(t *testing.T) {
 
 	deque1 := FilterTo(vec, func(t int64) bool {
 		return t > 2
-	}, Deque_)
+	}, Deque_[int64])
 	fmt.Println(deque1)
 
 	ptrVec := Map(vec,

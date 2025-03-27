@@ -153,14 +153,14 @@ func Reduce[T, R any, TS Iterator[T]](ts TS, seed R, fn func(R, T) R) R {
 func ToDict[K comparable, T any, TS Iterator[T]](ts TS, kFn func(T) K) Dict[K, T] {
 	return MapTo(ts, func(t T) KV[K, T] {
 		return KV_(kFn(t), t)
-	}, Dict_)
+	}, Dict_[K, T])
 }
 
 // VToDict Convert to a dictionary and map keys and values
 func VToDict[K comparable, V, T any, TS Iterator[T]](ts TS, kvFn func(T) (K, V)) Dict[K, V] {
 	return MapTo(ts, func(t T) KV[K, V] {
 		return KV_(kvFn(t))
-	}, Dict_)
+	}, Dict_[K, V])
 }
 
 // GroupBy Grouping function and map keys
