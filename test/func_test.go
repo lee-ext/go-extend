@@ -80,7 +80,7 @@ func TestFunc(t *testing.T) {
 				return Some(*t)
 			}
 			return None[int64]()
-		}, Set_)
+		}, Set_[int64])
 	fmt.Println(set2)
 
 	sum := Reduce(vec, int64(0), func(l int64, r int64) int64 {
