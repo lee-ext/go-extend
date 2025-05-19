@@ -1,3 +1,3 @@
-module github.com/lee157953/go-extend
+module github.com/lee-ext/go-extend
 
 go 1.23
