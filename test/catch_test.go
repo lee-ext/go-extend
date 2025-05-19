@@ -4,8 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"testing"
-
-	. "github.com/lee157953/go-extend/ext"
+	. "github.com/lee-ext/go-extend/ext"
 )
 
 var _Err = errors.New("my err")
