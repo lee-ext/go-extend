@@ -1,5 +1,7 @@
 package ext
 
+import "time"
+
 // Actor actor model entity
 type Actor struct {
 	ch chan func()
@@ -13,18 +15,18 @@ func Actor_(cap int, deferFn func(any)) Actor {
 }
 
 func (a Actor) receive(deferFn func(any)) {
-	go func() {
-		defer func() {
-			r := recover()
+	defer func() {
+		r := recover()
+		if r != nil {
 			deferFn(r)
-			if r != nil {
+			time.AfterFunc(time.Second, func() {
 				go a.receive(deferFn)
-			}
-		}()
-		for fn := range a.ch {
-			fn()
+			})
 		}
 	}()
+	for fn := range a.ch {
+		fn()
+	}
 }
 
 // Launch a function to the actor
@@ -39,12 +41,6 @@ return p
 func (a Actor) Launch(fn func()) {
 	a.ch <- fn
 }
-
-/*func ActorAsync[T any](actor Actor, fn func() T) Promise[T] {
-	p, f := Promise_[T]()
-	actor.Launch(func() { f(fn()) })
-	return p
-}*/
 
 // Close the actor
 func (a Actor) Close() {
