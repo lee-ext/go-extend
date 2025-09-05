@@ -95,7 +95,7 @@ func (c Canceler) Canceled() bool {
 	return c.b.Load()
 }
 
-func Canceller_() Canceler {
+func Canceler_() Canceler {
 	c := Canceler{new(atomic.Bool)}
 	return c
 }
