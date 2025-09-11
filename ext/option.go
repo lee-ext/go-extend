@@ -51,7 +51,7 @@ func (o Opt[T]) Get() T {
 	panic(errors.New(_OptNoneMsg))
 }
 
-// Get_ if it is `none`, return default
+// Get_ if it is `none`, return default value
 func (o Opt[T]) Get_() T {
 	if o.IsSome() {
 		return o.v
