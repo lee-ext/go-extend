@@ -43,7 +43,7 @@ func (o Opt[T]) ToVec() Vec[T] {
 	return Vec[T]{}
 }
 
-// Get 获取值 如果为none 则会panic
+// Get if it is `none`, a panic will occur
 func (o Opt[T]) Get() T {
 	if o.IsSome() {
 		return o.v
@@ -51,7 +51,7 @@ func (o Opt[T]) Get() T {
 	panic(errors.New(_OptNoneMsg))
 }
 
-// Get_ 获取值 如果为none 则会返回初始值
+// Get_ if it is `none`, return default
 func (o Opt[T]) Get_() T {
 	if o.IsSome() {
 		return o.v
@@ -115,7 +115,7 @@ func (o NzOpt[T]) ToOpt() Opt[T] {
 	return None[T]()
 }
 
-// Get 获取值 如果为none 则会panic
+// Get if it is `none`, a panic will occur
 func (o NzOpt[T]) Get() T {
 	if o.IsSome() {
 		return o.v

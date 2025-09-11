@@ -2,8 +2,9 @@ package test
 
 import (
 	"fmt"
-	. "github.com/lee-ext/go-extend/ext"
 	"testing"
+
+	. "github.com/lee-ext/go-extend/ext"
 )
 
 func TestFunc(t *testing.T) {
