@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"iter"
-	"unsafe"
 )
 
 // Deque Define a generic ring queue
@@ -278,13 +277,14 @@ func (d Deque[E]) grow() {
 	}
 }
 
-func (d Deque[E]) unsafeEditLen(len int) {
+/*func (d Deque[E]) unsafeEditLen(len int) {
 	(*[3]int)(unsafe.Pointer(&d.data))[1] = len
-}
+}*/
 
 func (d Deque[E]) fillLen() bool {
 	if d.Empty() {
-		d.unsafeEditLen(d.Cap())
+		//d.unsafeEditLen(d.Cap())
+		d.data = d.data[:d.Cap()]
 		return false
 	}
 	return true
@@ -292,7 +292,8 @@ func (d Deque[E]) fillLen() bool {
 
 func (d Deque[E]) clearLen() bool {
 	if d.head == d.tail {
-		d.unsafeEditLen(0)
+		//d.unsafeEditLen(0)
+		d.data = d.data[:0]
 		return false
 	}
 	return true
