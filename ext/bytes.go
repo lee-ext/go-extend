@@ -49,9 +49,8 @@ func (b Bytes) ReadString(offset, len int, copy bool) string {
 	bytes := b.ReadBytes(offset, len)
 	if copy {
 		return string(bytes)
-	} else {
-		return BytesCastStr(bytes)
 	}
+	return BytesCastStr(bytes)
 }
 
 func (b Bytes) WriteBytes(offset int, bytes Bytes) {
