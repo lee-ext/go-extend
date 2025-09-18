@@ -1,7 +1,6 @@
 package ext
 
 import (
-	"encoding/binary"
 	"unsafe"
 )
 
@@ -28,11 +27,11 @@ func BytesCastNumber[T Number](bytes []byte) T {
 	case 1:
 		t = UnsafeCast[T](bytes[0])
 	case 2:
-		t = UnsafeCast[T](binary.BigEndian.Uint16(bytes))
+		t = UnsafeCast[T](_BE.Uint16(bytes))
 	case 4:
-		t = UnsafeCast[T](binary.BigEndian.Uint32(bytes))
+		t = UnsafeCast[T](_BE.Uint32(bytes))
 	case 8:
-		t = UnsafeCast[T](binary.BigEndian.Uint64(bytes))
+		t = UnsafeCast[T](_BE.Uint64(bytes))
 	}
 	return t
 }
@@ -45,11 +44,11 @@ func BytesCastNumberLe[T Number](bytes []byte) T {
 	case 1:
 		t = UnsafeCast[T](bytes[0])
 	case 2:
-		t = UnsafeCast[T](binary.LittleEndian.Uint16(bytes))
+		t = UnsafeCast[T](_LE.Uint16(bytes))
 	case 4:
-		t = UnsafeCast[T](binary.LittleEndian.Uint32(bytes))
+		t = UnsafeCast[T](_LE.Uint32(bytes))
 	case 8:
-		t = UnsafeCast[T](binary.LittleEndian.Uint64(bytes))
+		t = UnsafeCast[T](_LE.Uint64(bytes))
 	}
 	return t
 }
