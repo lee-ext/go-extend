@@ -57,7 +57,7 @@ func MapWhileTo[T, R any, TS Iterator[T], RS FromIterator[R, RS]](
 	return rs
 }
 
-// Flatten Flattening the Iterator[T] to Vec[T]
+// Flatten Flattening the Iterator[Iterator[T]] to Vec[T]
 func Flatten[T any, TS Iterator[T], TG Iterator[TS]](tg TG) Vec[T] {
 	rs := Vec_[T](Reduce(tg, 0,
 		func(l int, r TS) int {

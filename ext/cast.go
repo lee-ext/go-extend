@@ -10,12 +10,12 @@ func UnsafeCast[R, T any](t T) R {
 }
 
 // BytesCastStr Avoid unsafe conversions that cause memory copies.
-func BytesCastStr(bytes []byte) string {
+func BytesCastStr(bytes Bytes) string {
 	return unsafe.String(unsafe.SliceData(bytes), len(bytes))
 }
 
 // StrCastBytes Avoid unsafe conversions that cause memory copies.
-func StrCastBytes(str string) []byte {
+func StrCastBytes(str string) Bytes {
 	return unsafe.Slice(unsafe.StringData(str), len(str))
 }
 

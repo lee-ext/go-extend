@@ -16,6 +16,13 @@ func Opt_[T any](t T, b bool) Opt[T] {
 	return Opt[T]{t, b}
 }
 
+func PtrToOpt[T any](ptr *T) Opt[T] {
+	if ptr != nil {
+		return Some(*ptr)
+	}
+	return None[T]()
+}
+
 func Some[T any](t T) Opt[T] {
 	return Opt[T]{t, true}
 }
