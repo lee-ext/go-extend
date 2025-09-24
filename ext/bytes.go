@@ -9,7 +9,7 @@ var (
 	_LE = binary.LittleEndian
 )
 
-type Bytes []byte
+type Bytes Vec[byte]
 
 func Bytes_(len int) Bytes {
 	return make([]byte, len)
