@@ -195,5 +195,4 @@ func TestFunc(t *testing.T) {
 	!maps.EqualFunc(stuGroup0, g, slices.Equal[Vec[string]]) {
 		t.Errorf("result is %v, expected %v", stuGroup0, g)
 	}
-
 }

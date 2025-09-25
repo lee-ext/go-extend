@@ -28,16 +28,10 @@ func (r Res[T]) IsNone() bool {
 }
 
 func (r Res[T]) ToOpt() Opt[T] {
-	switch v := r.v.(type) {
-	case T:
-		return Some(v)
-	case nil:
-		return None[T]()
-	case error:
-		panic(v)
-	default:
-		panic(fmt.Errorf("unknown type: %#v", v))
+	if t, b := r.v.(T); b {
+		return Some(t)
 	}
+	return None[T]()
 }
 
 func (r Res[T]) Get() T {
