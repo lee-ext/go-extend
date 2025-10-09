@@ -34,6 +34,7 @@ import (
 // LoadOrStore is a write operation when it returns loaded set to false;
 // CompareAndSwap is a write operation when it returns swapped set to true;
 // and CompareAndDelete is a write operation when it returns deleted set to true.
+// Deprecated
 type SyncDict[K comparable, V any] struct {
 	mu sync.Mutex
 
