@@ -85,14 +85,14 @@ func (r Res[T]) Err() error {
 	}
 }
 
-func (r Res[T]) Map(fn func(T)) Res[T] {
+func (r Res[T]) Call(fn func(T)) Res[T] {
 	if v, b := r.v.(T); b {
 		fn(v)
 	}
 	return r
 }
 
-func (r Res[T]) ErrMap(fn func(err error)) Res[T] {
+func (r Res[T]) ErrCall(fn func(err error)) Res[T] {
 	switch v := r.v.(type) {
 	case T:
 		break
