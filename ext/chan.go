@@ -2,7 +2,6 @@ package ext
 
 type Chan[E any] chan E
 type Sender[E any] chan<- E
-
 type Receiver[E any] <-chan E
 
 func Chan_[E any](cap int) Chan[E] {
