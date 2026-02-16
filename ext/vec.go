@@ -55,23 +55,24 @@ func (v Vec[E]) Cap() int {
 
 func (v Vec[E]) Get(index int) Opt[E] {
 	if index < v.Len() {
-		return Opt[E]{v[index], true}
+		return Some(v[index])
 	}
-	return Opt[E]{}
+	return None[E]()
 }
 
 func (v Vec[E]) First() Opt[E] {
-	if !v.Empty() {
-		return Opt[E]{v[0], true}
+	if v.Empty() {
+		return None[E]()
 	}
-	return Opt[E]{}
+	return Some(v[0])
+
 }
 
 func (v Vec[E]) Last() Opt[E] {
-	if !v.Empty() {
-		return Opt[E]{v[v.Len()-1], true}
+	if v.Empty() {
+		return None[E]()
 	}
-	return Opt[E]{}
+	return Some(v[v.Len()-1])
 }
 
 func (v Vec[E]) Reverse() {

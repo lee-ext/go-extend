@@ -61,43 +61,43 @@ func (d Deque[E]) PushBack(value E) {
 // PopFront Pop elements from the front
 func (d Deque[E]) PopFront() Opt[E] {
 	if d.Empty() {
-		return Opt_(*new(E), false)
+		return None[E]()
 	}
 	value := d.data[d.head]
 	if d.clearLen() {
 		d.data[d.head] = *new(E)
 		d.head = change(d.head, d.Cap(), 1)
 	}
-	return Opt_(value, true)
+	return Some(value)
 }
 
 // PopBack Pop elements from the back
 func (d Deque[E]) PopBack() Opt[E] {
 	if d.Empty() {
-		return Opt_(*new(E), false)
+		return None[E]()
 	}
 	value := d.data[d.tail]
 	if d.clearLen() {
 		d.data[d.tail] = *new(E)
 		d.tail = change(d.tail, d.Cap(), -1)
 	}
-	return Opt_(value, true)
+	return Some(value)
 }
 
 // Front View the front element
 func (d Deque[E]) Front() Opt[E] {
 	if d.Empty() {
-		return Opt_(*new(E), false)
+		return None[E]()
 	}
-	return Opt_(d.data[d.head], true)
+	return Some(d.data[d.head])
 }
 
 // Back View the back element
 func (d Deque[E]) Back() Opt[E] {
 	if d.Empty() {
-		return Opt_(*new(E), false)
+		return None[E]()
 	}
-	return Opt_(d.data[d.tail], true)
+	return Some(d.data[d.tail])
 }
 
 // ForEach Traverse the Deque[E]

@@ -53,15 +53,15 @@ func (c Chan[E]) AppendSelf(element E) Chan[E] {
 
 func (c Chan[E]) Recv() Opt[E] {
 	e, b := <-c
-	return Opt[E]{e, b}
+	return Opt_(e, b)
 }
 
 func (c Chan[E]) TryRecv() Opt[E] {
 	select {
 	case e, b := <-c:
-		return Opt[E]{e, b}
+		return Opt_(e, b)
 	default:
-		return Opt[E]{}
+		return None[E]()
 	}
 }
 
@@ -119,15 +119,15 @@ func (c Sender[E]) AppendSelf(element E) Sender[E] {
 
 func (c Receiver[E]) Recv() Opt[E] {
 	e, b := <-c
-	return Opt[E]{e, b}
+	return Opt_(e, b)
 }
 
 func (c Receiver[E]) TryRecv() Opt[E] {
 	select {
 	case e, b := <-c:
-		return Opt[E]{e, b}
+		return Opt_(e, b)
 	default:
-		return Opt[E]{}
+		return None[E]()
 	}
 }
 
