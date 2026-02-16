@@ -80,6 +80,12 @@ func (o Opt[T]) GetElse(fn func() T) T {
 	return fn()
 }
 
+func (o *Opt[T]) Take() Opt[T] {
+	o_ := *o
+	*o = None[T]()
+	return o_
+}
+
 func (o Opt[T]) String() string {
 	if o.IsSome() {
 		return fmt.Sprintf("some(%v)", o.v)

@@ -75,6 +75,16 @@ func (v Vec[E]) Last() Opt[E] {
 	return Some(v[v.Len()-1])
 }
 
+func (v *Vec[E]) Pop() Opt[E] {
+	if v.Empty() {
+		return None[E]()
+	}
+	index := v.Len() - 1
+	last := (*v)[index]
+	v.RemoveAt(index)
+	return Some(last)
+}
+
 func (v Vec[E]) Reverse() {
 	slices.Reverse(v)
 }
