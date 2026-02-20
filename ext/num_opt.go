@@ -8,6 +8,8 @@ import (
 	"unsafe"
 )
 
+var _UnmarshalJsonNilPtrErr = errors.New("UnmarshalJSON on nil pointer")
+
 type OptU[T uint | uint8 | uint16 | uint32 | uint64] struct {
 	u T
 }
@@ -76,7 +78,7 @@ func (o OptU[T]) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON sets *m to a copy of data.
 func (o *OptU[T]) UnmarshalJSON(data []byte) error {
 	if o == nil {
-		return errors.New("UnmarshalJSON on nil pointer")
+		return _UnmarshalJsonNilPtrErr
 	}
 	str := string(data)
 	if str != "null" {
@@ -170,7 +172,7 @@ func (o OptI[T]) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON sets *m to a copy of data.
 func (o *OptI[T]) UnmarshalJSON(data []byte) error {
 	if o == nil {
-		return errors.New("UnmarshalJSON on nil pointer")
+		return _UnmarshalJsonNilPtrErr
 	}
 	str := string(data)
 	if str != "null" {
@@ -209,15 +211,14 @@ func (o OptF[T]) Opt() Opt[T] {
 func (o OptF[T]) IsSome() bool {
 	if o.f != 0 {
 		return true
-	} else {
-		switch unsafe.Sizeof(o.f) {
-		case 4:
-			return math.Float32bits(float32(o.f))&(1<<31) != 0
-		case 8:
-			return math.Float64bits(float64(o.f))&(1<<63) != 0
-		default:
-			return false
-		}
+	}
+	switch unsafe.Sizeof(o.f) {
+	case 4:
+		return math.Float32bits(float32(o.f))&(1<<31) != 0
+	case 8:
+		return math.Float64bits(float64(o.f))&(1<<63) != 0
+	default:
+		return false
 	}
 }
 
@@ -279,7 +280,7 @@ func (o OptF[T]) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON sets *m to a copy of data.
 func (o *OptF[T]) UnmarshalJSON(data []byte) error {
 	if o == nil {
-		return errors.New("UnmarshalJSON on nil pointer")
+		return _UnmarshalJsonNilPtrErr
 	}
 	str := string(data)
 	if str != "null" {
