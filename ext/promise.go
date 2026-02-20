@@ -41,9 +41,9 @@ func (p Promise[T]) Done() bool {
 func (p Promise[T]) Cancel() bool {
 	if p.status.Load() == _PromisePending {
 		p.locker.Lock()
-		defer p.waiter.Done()
 		defer p.locker.Unlock()
 		if p.status.Load() == _PromisePending {
+			defer p.waiter.Done()
 			p.status.Store(_PromiseCanceled)
 			return true
 		}
@@ -54,9 +54,9 @@ func (p Promise[T]) Cancel() bool {
 func (p Promise[T]) Complete(t T) bool {
 	if p.status.Load() == _PromisePending {
 		p.locker.Lock()
-		defer p.waiter.Done()
 		defer p.locker.Unlock()
 		if p.status.Load() == _PromisePending {
+			defer p.waiter.Done()
 			p.result = t
 			p.status.Store(_PromiseCompleted)
 			return true
