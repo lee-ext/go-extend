@@ -49,6 +49,10 @@ func (v Vec[E]) Empty() bool {
 	return len(v) == 0
 }
 
+func (v Vec[E]) AppendSelf(element E) Vec[E] {
+	return append(v, element)
+}
+
 func (v Vec[E]) Cap() int {
 	return cap(v)
 }
@@ -85,14 +89,6 @@ func (v *Vec[E]) Pop() Opt[E] {
 	return Some(last)
 }
 
-func (v Vec[E]) Reverse() {
-	slices.Reverse(v)
-}
-
-func (v Vec[E]) Clear() {
-	clear(v)
-}
-
 func (v *Vec[E]) Append(element E) {
 	*v = append(*v, element)
 }
@@ -101,8 +97,20 @@ func (v *Vec[E]) Appends(elements ...E) {
 	*v = append(*v, elements...)
 }
 
+func (v Vec[E]) Clear() {
+	clear(v)
+}
+
 func (v *Vec[E]) Insert(index int, elements ...E) {
 	*v = slices.Insert(*v, index, elements...)
+}
+
+func (v *Vec[E]) Replace(i, j int, e ...E) {
+	*v = slices.Replace(*v, i, j, e...)
+}
+
+func (v *Vec[E]) Repeat(count int) {
+	*v = slices.Repeat(*v, count)
 }
 
 func (v *Vec[E]) RemoveAt(index int) {
@@ -133,8 +141,8 @@ func (v Vec[E]) Clone() Vec[E] {
 	return slices.Clone(v)
 }
 
-func (v Vec[E]) AppendSelf(element E) Vec[E] {
-	return append(v, element)
+func (v Vec[E]) Reverse() {
+	slices.Reverse(v)
 }
 
 func (v Vec[E]) Shuffle() {
@@ -145,12 +153,48 @@ func (v Vec[E]) Shuffle() {
 	}
 }
 
-func (v Vec[E]) ToReverse() RevVec[E] {
-	return RevVec[E]{v}
+func (v *Vec[E]) CompactFunc(eq func(E, E) bool) {
+	*v = slices.CompactFunc(*v, eq)
+}
+
+func (v Vec[E]) IndexFunc(f func(E) bool) int {
+	return slices.IndexFunc(v, f)
+}
+
+func (v Vec[E]) ContainsFunc(f func(E) bool) bool {
+	return slices.ContainsFunc(v, f)
+}
+
+func (v Vec[E]) SortFunc(cmp func(a, b E) int) {
+	slices.SortFunc(v, cmp)
+}
+
+func (v Vec[E]) SortStableFunc(cmp func(a, b E) int) {
+	slices.SortStableFunc(v, cmp)
+}
+
+func (v Vec[E]) IsSortedFunc(cmp func(a, b E) int) {
+	slices.IsSortedFunc(v, cmp)
+}
+
+func (v Vec[E]) BinarySearchFunc(target E, cmp func(a, b E) int) (int, bool) {
+	return slices.BinarySearchFunc(v, target, cmp)
+}
+
+func (v Vec[E]) MaxFunc(cmp func(a, b E) int) E {
+	return slices.MaxFunc(v, cmp)
+}
+
+func (v Vec[E]) MinFunc(cmp func(a, b E) int) E {
+	return slices.MinFunc(v, cmp)
 }
 
 type RevVec[E any] struct {
 	Vec[E]
+}
+
+func (v Vec[E]) ToReverse() RevVec[E] {
+	return RevVec[E]{v}
 }
 
 func (v RevVec[E]) ForEach(fn func(E)) {
@@ -195,12 +239,10 @@ func (v IdxVec[E]) ForEachWhile(fn func(KV[int, E]) bool) {
 	}
 }
 
-var _EmptyJson = []byte("[]")
-
 // MarshalJSON returns m as the JSON encoding of m.
 func (v Vec[E]) MarshalJSON() ([]byte, error) {
 	if v == nil {
-		return _EmptyJson, nil
+		return []byte("[]"), nil
 	}
 	return json.Marshal([]E(v))
 }

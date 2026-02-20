@@ -122,12 +122,42 @@ func (c Receiver[E]) Recv() Opt[E] {
 	return Opt_(e, b)
 }
 
-func (c Receiver[E]) TryRecv() Opt[E] {
+const (
+	_ChanEmpty    = 0
+	_Received     = 1
+	_Disconnected = -1
+)
+
+type RecvRes[T any] struct {
+	v T
+	s int8
+}
+
+func (r RecvRes[T]) IsChanEmpty() bool {
+	return r.s == _ChanEmpty
+}
+
+func (r RecvRes[T]) IsReceived() bool {
+	return r.s == _Received
+}
+
+func (r RecvRes[T]) IsDisconnected() bool {
+	return r.s == _Disconnected
+}
+
+func (r RecvRes[T]) ToOpt() Opt[T] {
+	return Opt_(r.v, r.s == _Received)
+}
+
+func (c Receiver[E]) TryRecv() RecvRes[E] {
 	select {
 	case e, b := <-c:
-		return Opt_(e, b)
+		if b {
+			return RecvRes[E]{e, _Received}
+		}
+		return RecvRes[E]{s: _Disconnected}
 	default:
-		return None[E]()
+		return RecvRes[E]{s: _ChanEmpty}
 	}
 }
 
