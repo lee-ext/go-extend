@@ -14,7 +14,6 @@ func (bm *BitMap[T]) Value() T {
 	return bm.value
 }
 
-// Set 把T的第index位置为b
 func (bm *BitMap[T]) Set(index int, b bool) {
 	v := bm.value
 	if b {
@@ -25,7 +24,6 @@ func (bm *BitMap[T]) Set(index int, b bool) {
 	bm.value = v
 }
 
-// Get 获取T中的第index位置的值
 func (bm *BitMap[T]) Get(index int) bool {
 	if index >= int(unsafe.Sizeof(bm.value))*8 {
 		return false
@@ -60,7 +58,6 @@ func (bm *BytesBitMap) Value() []byte {
 	return bm.value
 }
 
-// Set 把T的第index位置为b
 func (bm *BytesBitMap) Set(index int, b bool) {
 	outIndex := index / 8
 	if outIndex >= len(bm.value) {
@@ -78,7 +75,6 @@ func (bm *BytesBitMap) Set(index int, b bool) {
 	bm.value[outIndex] = v
 }
 
-// Get 获取T中的第index位置的值
 func (bm *BytesBitMap) Get(index int) bool {
 	if index >= len(bm.value)*8 {
 		return false
