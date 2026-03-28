@@ -29,16 +29,13 @@ func Launch(fn func(), deferFn func(any)) {
 }
 
 // LaunchSturdy same of Launch, but this will wake itself up
-func LaunchSturdy(fn func(), deferFn func(any), delayMs ...time.Duration) {
+func LaunchSturdy(fn func(), deferFn func(any), delay ...time.Duration) {
 	go func() {
 		defer func() {
 			deferFn(recover())
-			delay := time.Second
-			if len(delayMs) > 0 {
-				delay = delayMs[0]
-			}
-			time.Sleep(delay)
-			LaunchSturdy(fn, deferFn, delay)
+			delay_ := VecOf(delay...).Get(0).GetOr(time.Second)
+			time.Sleep(delay_)
+			LaunchSturdy(fn, deferFn, delay_)
 		}()
 		fn()
 	}()
