@@ -33,7 +33,10 @@ func LaunchSturdy(fn func(), deferFn func(any), delay ...time.Duration) {
 	go func() {
 		defer func() {
 			deferFn(recover())
-			delay_ := VecOf(delay...).Get(0).GetOr(time.Second)
+			delay_ := time.Second
+			if len(delay) > 0 {
+				delay_ = delay[0]
+			}
 			time.Sleep(delay_)
 			LaunchSturdy(fn, deferFn, delay_)
 		}()
