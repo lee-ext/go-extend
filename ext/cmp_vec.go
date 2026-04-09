@@ -10,12 +10,12 @@ import (
 // CmpVec Ordered
 type CmpVec[E Ordered] []E
 
-func CmpVec_[E Ordered](cap int) Vec[E] {
-	return make(Vec[E], 0, cap)
+func CmpVec_[E Ordered](cap int) CmpVec[E] {
+	return make(CmpVec[E], 0, cap)
 }
 
-func CmpVecInit[E Ordered](len_ int, fn_ ...func(int) E) Vec[E] {
-	vec := make(Vec[E], len_)
+func CmpVecInit[E Ordered](len_ int, fn_ ...func(int) E) CmpVec[E] {
+	vec := make(CmpVec[E], len_)
 	if len(fn_) > 0 {
 		fn := fn_[0]
 		for i := range len_ {
@@ -25,7 +25,7 @@ func CmpVecInit[E Ordered](len_ int, fn_ ...func(int) E) Vec[E] {
 	return vec
 }
 
-func CmpVecOf[E Ordered](es ...E) Vec[E] {
+func CmpVecOf[E Ordered](es ...E) CmpVec[E] {
 	return es
 }
 
