@@ -7,7 +7,7 @@ import (
 	"slices"
 )
 
-// CmpVec Ordered
+// CmpVec Ordered element
 type CmpVec[E Ordered] []E
 
 func CmpVec_[E Ordered](cap int) CmpVec[E] {
