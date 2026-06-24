@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	_PromisePending   = 0
-	_PromiseCompleted = 1
-	_PromiseCanceled  = -1
+	_PromisePending    = 0
+	_PromiseCompleting = 1
+	_PromiseCompleted  = 2
+	_PromiseCanceled   = -1
 )
 
 type Promise[T any] struct {
@@ -16,7 +17,6 @@ type Promise[T any] struct {
 }
 
 type _PromisePin[T any] struct {
-	//locker sync.Mutex
 	waiter sync.WaitGroup
 	status atomic.Int32
 	result T
@@ -35,49 +35,22 @@ func (p Promise[T]) Completed() bool {
 }
 
 func (p Promise[T]) Done() bool {
-	return !p.Pending()
+	s := p.status.Load()
+	return s == _PromiseCompleted || s == _PromiseCanceled
 }
 
-//func (p Promise[T]) Cancel() bool {
-//	if p.status.Load() == _PromisePending {
-//		p.locker.Lock()
-//		defer p.locker.Unlock()
-//		if p.status.Load() == _PromisePending {
-//			defer p.waiter.Done()
-//			p.status.Store(_PromiseCanceled)
-//			return true
-//		}
-//	}
-//	return false
-//}
-
 func (p Promise[T]) Cancel() bool {
-	if p.status.CompareAndSwap(
-		_PromisePending, _PromiseCanceled) {
+	if p.status.CompareAndSwap(_PromisePending, _PromiseCanceled) {
 		p.waiter.Done()
 		return true
 	}
 	return false
 }
 
-//func (p Promise[T]) Complete(t T) bool {
-//	if p.status.Load() == _PromisePending {
-//		p.locker.Lock()
-//		defer p.locker.Unlock()
-//		if p.status.Load() == _PromisePending {
-//			defer p.waiter.Done()
-//			p.result = t
-//			p.status.Store(_PromiseCompleted)
-//			return true
-//		}
-//	}
-//	return false
-//}
-
 func (p Promise[T]) Complete(v T) bool {
-	if p.status.CompareAndSwap(
-		_PromisePending, _PromiseCompleted) {
+	if p.status.CompareAndSwap(_PromisePending, _PromiseCompleting) {
 		p.result = v
+		p.status.Store(_PromiseCompleted)
 		p.waiter.Done()
 		return true
 	}
@@ -102,19 +75,29 @@ func Promise_[T any]() Promise[T] {
 	return p
 }
 
-type Canceler struct {
-	b *atomic.Bool
-}
+//func (p Promise[T]) Cancel() bool {
+//	if p.status.Load() == _PromisePending {
+//		p.locker.Lock()
+//		defer p.locker.Unlock()
+//		if p.status.Load() == _PromisePending {
+//			defer p.waiter.Done()
+//			p.status.Store(_PromiseCanceled)
+//			return true
+//		}
+//	}
+//	return false
+//}
 
-func (c Canceler) Cancel() {
-	c.b.Store(true)
-}
-
-func (c Canceler) Canceled() bool {
-	return c.b.Load()
-}
-
-func Canceler_() Canceler {
-	c := Canceler{new(atomic.Bool)}
-	return c
-}
+//func (p Promise[T]) Complete(t T) bool {
+//	if p.status.Load() == _PromisePending {
+//		p.locker.Lock()
+//		defer p.locker.Unlock()
+//		if p.status.Load() == _PromisePending {
+//			defer p.waiter.Done()
+//			p.result = t
+//			p.status.Store(_PromiseCompleted)
+//			return true
+//		}
+//	}
+//	return false
+//}
