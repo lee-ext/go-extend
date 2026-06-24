@@ -31,7 +31,8 @@ func (p Promise[T]) Canceled() bool {
 }
 
 func (p Promise[T]) Completed() bool {
-	return p.status.Load() == _PromiseCompleted
+	s := p.status.Load()
+	return s == _PromiseCompleted || s == _PromiseCompleting
 }
 
 func (p Promise[T]) Done() bool {
