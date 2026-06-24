@@ -3,6 +3,7 @@ package ext
 import (
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 const (
@@ -37,6 +38,14 @@ func (p Promise[T]) Completed() bool {
 func (p Promise[T]) Done() bool {
 	s := p.status.Load()
 	return s == _PromiseCompleted || s == _PromiseCanceled
+}
+
+func (p Promise[T]) Timeout(d time.Duration) *time.Timer {
+	return time.AfterFunc(d, func() {
+		if p.status.CompareAndSwap(_PromisePending, _PromiseCanceled) {
+			p.waiter.Done()
+		}
+	})
 }
 
 func (p Promise[T]) Cancel() bool {
