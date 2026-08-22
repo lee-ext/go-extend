@@ -22,6 +22,10 @@ func Deque_[E any](cap_ int) Deque[E] {
 	return Deque[E]{&_DequePin[E]{make([]E, 0, cap_), 0, 0}}
 }
 
+func (d Deque[E]) Iter() Iter[E] {
+	return Iter[E]{ts: d}
+}
+
 // Get Use index to retrieve elements
 func (d Deque[E]) Get(index int) E {
 	return d.data[d.realIndex(index)]

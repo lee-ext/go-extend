@@ -14,6 +14,10 @@ func MDictOf[K comparable, V any](kvs ...KV[K, Vec[V]]) MDict[K, V] {
 	return m
 }
 
+func (d MDict[K, V]) Iter() Iter[KV[K, Vec[V]]] {
+	return Iter[KV[K, Vec[V]]]{ts: d}
+}
+
 func (d MDict[K, V]) ForEach(fn func(KV[K, Vec[V]])) {
 	for k, v := range d {
 		fn(KV_(k, v))
@@ -97,7 +101,8 @@ func (d MDict[K, V]) Clear() {
 	clear(d)
 }
 
-func (d MDict[K, V]) AppendSelf(kv KV[K, Vec[V]]) MDict[K, V] {
-	d[kv.K] = kv.V
+func (d MDict[K, V]) AppendSelf(kv KV[K, V]) MDict[K, V] {
+	k, v := kv.D()
+	d[k] = append(d[k], v)
 	return d
 }

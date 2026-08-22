@@ -8,6 +8,10 @@ func VecM2_[T0, T1 any](vec0 Vec[T0], vec1 Vec[T1]) VecM2[T0, T1] {
 	return VecM2[T0, T1]{vec0, vec1}
 }
 
+func (m VecM2[T0, T1]) Iter() Iter[T2[T0, T1]] {
+	return Iter[T2[T0, T1]]{ts: m}
+}
+
 func (m VecM2[T0, T1]) ForEach(fn func(T2[T0, T1])) {
 	for i := range m.Len() {
 		fn(T2_(m.V0[i], m.V1[i]))
@@ -38,6 +42,10 @@ func (m VecM2[T0, T1]) ToVec() Vec[T2[T0, T1]] {
 
 func VecM3_[T0, T1, T2 any](vec0 Vec[T0], vec1 Vec[T1], vec2 Vec[T2]) VecM3[T0, T1, T2] {
 	return VecM3[T0, T1, T2]{vec0, vec1, vec2}
+}
+
+func (m VecM3[T0, T1, T2]) Iter() Iter[T3[T0, T1, T2]] {
+	return Iter[T3[T0, T1, T2]]{ts: m}
 }
 
 func (m VecM3[T0, T1, T2]) ForEach(fn func(T3[T0, T1, T2])) {

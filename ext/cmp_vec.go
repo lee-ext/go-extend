@@ -29,6 +29,10 @@ func CmpVecOf[E Ordered](es ...E) CmpVec[E] {
 	return es
 }
 
+func (v CmpVec[E]) Iter() Iter[E] {
+	return Iter[E]{ts: v}
+}
+
 func (v CmpVec[E]) ForEach(fn func(E)) {
 	for _, e := range v {
 		fn(e)

@@ -8,6 +8,10 @@ func Chan_[E any](cap int) Chan[E] {
 	return make(chan E, cap)
 }
 
+func (c Chan[E]) Iter() Iter[E] {
+	return Iter[E]{ts: c}
+}
+
 func (c Chan[E]) Split() (sx Sender[E], rx Receiver[E]) {
 	ch := (chan E)(c)
 	return ch, ch
@@ -115,6 +119,10 @@ func (c Sender[E]) Close() {
 func (c Sender[E]) AppendSelf(element E) Sender[E] {
 	c <- element
 	return c
+}
+
+func (c Receiver[E]) Iter() Iter[E] {
+	return Iter[E]{ts: c}
 }
 
 func (c Receiver[E]) Recv() Opt[E] {

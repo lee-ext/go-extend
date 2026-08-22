@@ -23,6 +23,10 @@ func SetOf[E comparable](es ...E) Set[E] {
 	return s
 }
 
+func (s Set[E]) Iter() Iter[E] {
+	return Iter[E]{ts: s}
+}
+
 // ForEach Traverse the Set[E]
 func (s Set[E]) ForEach(fn func(E)) {
 	for e := range s {

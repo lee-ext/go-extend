@@ -148,9 +148,39 @@ func ResNone[T any]() Res[T] {
 	return Res[T]{nil}
 }
 
+func (r Res[T]) Map[R any](fn func(T) Res[R]) Res[R] {
+	if t, e := r.D(); e != nil {
+		return ResErr[R](e)
+	} else {
+		return fn(t)
+	}
+}
+
+func (r Res[T]) To[R any]() Res[R] {
+	if r.IsErr() {
+		return ResErr[R](r.Err())
+	}
+	panic(errors.New(_ResOkMsg))
+}
+
 func ResMap[T, R any](res Res[T], fn func(T) Res[R]) Res[R] {
 	if res.IsOk() {
 		return fn(res.Get())
 	}
 	return ResErr[R](res.Err())
+}
+
+func ResTry[T any](fn func() T) (res Res[T]) {
+	defer func() {
+		switch r := recover().(type) {
+		case nil:
+			return
+		case error:
+			res = ResErr[T](r)
+		default:
+			res = ResErr[T](fmt.Errorf("panic: %#v", r))
+		}
+	}()
+	res = ResOk(fn())
+	return
 }
