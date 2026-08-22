@@ -103,8 +103,9 @@ func (v *CmpVec[E]) Appends(elements ...E) {
 	*v = append(*v, elements...)
 }
 
-func (v CmpVec[E]) Clear() {
-	clear(v)
+func (v *CmpVec[E]) Clear() {
+	clear(*v)
+	*v = (*v)[:0]
 }
 
 func (v *CmpVec[E]) Insert(index int, elements ...E) {
@@ -179,8 +180,8 @@ func (v CmpVec[E]) SortStableFunc(cmp func(a, b E) int) {
 	slices.SortStableFunc(v, cmp)
 }
 
-func (v CmpVec[E]) IsSortedFunc(cmp func(a, b E) int) {
-	slices.IsSortedFunc(v, cmp)
+func (v CmpVec[E]) IsSortedFunc(cmp func(a, b E) int) bool {
+	return slices.IsSortedFunc(v, cmp)
 }
 
 func (v CmpVec[E]) BinarySearchFunc(target E, cmp func(a, b E) int) (int, bool) {
@@ -211,8 +212,8 @@ func (v CmpVec[E]) Sort() {
 	slices.Sort(v)
 }
 
-func (v CmpVec[E]) IsSorted() {
-	slices.IsSorted(v)
+func (v CmpVec[E]) IsSorted() bool {
+	return slices.IsSorted(v)
 }
 
 func (v CmpVec[E]) BinarySearch(target E) (int, bool) {
