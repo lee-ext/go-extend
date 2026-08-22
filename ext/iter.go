@@ -1,5 +1,7 @@
 package ext
 
+import "fmt"
+
 type Iter[T any] struct {
 	ts Iterator[T]
 }
@@ -195,7 +197,7 @@ func (i Iter[T]) Flatten[RS Iterator[R], R any]() Iter[R] {
 	if rs, b := any(i.ts).(Iterator[RS]); b {
 		return Iter[R]{ts: FlattenIter[R, RS]{tg: rs}}
 	}
-	panic("Flatten failed")
+	panic(fmt.Errorf("Iter.Flatten: Iter[%T] element is not %T", *new(T), *new(RS)))
 }
 
 func (i Iter[T]) Collect[RS FromIterator[T, RS]](toFn func(int) RS) RS {
