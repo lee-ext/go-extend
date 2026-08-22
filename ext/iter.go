@@ -185,10 +185,11 @@ func (i Iter[T]) FlatMap[R any, RS Iterator[R]](fn func(T) RS) Iter[R] {
 
 func (i Iter[T]) FlatMapEager[R any, RS Iterator[R]](fn func(T) RS) Iter[R] {
 	total := 0
-	rg := i.Map(func(t T) RS {
+	rg := Vec_[RS](i.Len())
+	i.ForEach(func(t T) {
 		rs := fn(t)
 		total += rs.Len()
-		return rs
+		rg.Append(rs)
 	})
 	return Iter[R]{ts: FlattenIter[R, RS]{tg: rg, total: total}}
 }

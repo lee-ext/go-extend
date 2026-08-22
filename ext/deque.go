@@ -224,7 +224,7 @@ func (d Deque[E]) Len() int {
 	}
 	len_ := d.tail - d.head + 1
 	if len_ <= 0 {
-		len_ += len(d.data)
+		len_ += d.Cap()
 	}
 	return len_
 }
@@ -309,8 +309,9 @@ func (d Deque[E]) realIndex(index int) int {
 		panic(errors.New("index out of range"))
 	}
 	index += d.head
-	if index >= len_ {
-		index -= len_
+	cap_ := d.Cap()
+	if index >= cap_ {
+		index -= cap_
 	}
 	return index
 }
