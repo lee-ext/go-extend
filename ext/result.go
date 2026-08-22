@@ -163,13 +163,6 @@ func (r Res[T]) To[R any]() Res[R] {
 	panic(errors.New(_ResOkMsg))
 }
 
-func ResMap[T, R any](res Res[T], fn func(T) Res[R]) Res[R] {
-	if res.IsOk() {
-		return fn(res.Get())
-	}
-	return ResErr[R](res.Err())
-}
-
 func ResTry[T any](fn func() T) (res Res[T]) {
 	defer func() {
 		switch r := recover().(type) {
