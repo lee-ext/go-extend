@@ -194,8 +194,12 @@ func (i Iter[T]) FlatMapEager[R any, RS Iterator[R]](fn func(T) RS) Iter[R] {
 }
 
 func (i Iter[T]) Flatten[RS Iterator[R], R any]() Iter[R] {
-	if rs, b := any(i.ts).(Iterator[RS]); b {
-		return Iter[R]{ts: FlattenIter[R, RS]{tg: rs}}
+	if rg, b := any(i.ts).(Iterator[RS]); b {
+		total := 0
+		rg.ForEach(func(rs RS) {
+			total += rs.Len()
+		})
+		return Iter[R]{ts: FlattenIter[R, RS]{tg: rg, total: total}}
 	}
 	panic(fmt.Errorf("Iter.Flatten: Iter[%T] element is not %T", *new(T), *new(RS)))
 }
