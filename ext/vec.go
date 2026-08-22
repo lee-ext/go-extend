@@ -97,8 +97,9 @@ func (v *Vec[E]) Appends(elements ...E) {
 	*v = append(*v, elements...)
 }
 
-func (v Vec[E]) Clear() {
-	clear(v)
+func (v *Vec[E]) Clear() {
+	clear(*v)
+	*v = (*v)[:0]
 }
 
 func (v *Vec[E]) Insert(index int, elements ...E) {
@@ -173,8 +174,8 @@ func (v Vec[E]) SortStableFunc(cmp func(a, b E) int) {
 	slices.SortStableFunc(v, cmp)
 }
 
-func (v Vec[E]) IsSortedFunc(cmp func(a, b E) int) {
-	slices.IsSortedFunc(v, cmp)
+func (v Vec[E]) IsSortedFunc(cmp func(a, b E) int) bool {
+	return slices.IsSortedFunc(v, cmp)
 }
 
 func (v Vec[E]) BinarySearchFunc(target E, cmp func(a, b E) int) (int, bool) {
@@ -213,6 +214,14 @@ func (v RevVec[E]) ForEachWhile(fn func(E) bool) {
 	}
 }
 
+func (v RevVec[E]) len() int {
+	return v.Vec.Len()
+}
+
+func (v RevVec[E]) Empty() bool {
+	return v.Vec.Empty()
+}
+
 func (v RevVec[E]) Get(index int) Opt[E] {
 	return v.Vec.Get(v.Len() - index - 1)
 }
@@ -237,6 +246,14 @@ func (v IdxVec[E]) ForEachWhile(fn func(KV[int, E]) bool) {
 			return
 		}
 	}
+}
+
+func (v IdxVec[E]) len() int {
+	return v.Vec.Len()
+}
+
+func (v IdxVec[E]) Empty() bool {
+	return v.Vec.Empty()
 }
 
 // MarshalJSON returns m as the JSON encoding of m.
