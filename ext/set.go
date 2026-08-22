@@ -109,14 +109,13 @@ func (s Set[E]) Sub(other Set[E]) Set[E] {
 			}
 		}
 		return s_
-	} else {
-		// Clone the current Set[E] and remove elements from another Set[E]
-		s_ := maps.Clone(s)
-		for e := range other {
-			s_.Remove(e)
-		}
-		return s_
 	}
+	// Clone the current Set[E] and remove elements from another Set[E]
+	s_ := maps.Clone(s)
+	for e := range other {
+		s_.Remove(e)
+	}
+	return s_
 }
 
 // Xor Find the symmetrical difference between two Set[E]
