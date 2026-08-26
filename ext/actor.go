@@ -2,7 +2,7 @@ package ext
 
 import "time"
 
-// Actor actor model entity
+// Actor model entity
 type Actor struct {
 	ch chan func()
 }
