@@ -26,9 +26,13 @@ func TestIterFunc(t *testing.T) {
 			println("Filter")
 			return i%2 == 0
 		}).
-		Map(func(i int) KV[int, string] {
-			println("Map")
-			return KV_(i, fmt.Sprintf("val~%d", i))
-		}).Collect(MDict_[int, string])
+		//Map(func(i int) KV[int, string] {
+		//	println("Map")
+		//	return KV_(i, fmt.Sprintf("val~%d", i))
+		//}).
+		Map(KeyOf(func(v int) int {
+			return v
+		})).
+		Collect(MDict_[int, int])
 	fmt.Printf("%v\n", s)
 }

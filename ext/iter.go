@@ -22,37 +22,37 @@ func (i Iter[T]) Empty() bool {
 	return i.ts.Empty()
 }
 
-type MapIter[T, R any] struct {
+type _MapIter[T, R any] struct {
 	ts Iterator[T]
 	fn func(T) R
 }
 
-func (i MapIter[T, R]) ForEach(fn func(R)) {
+func (i _MapIter[T, R]) ForEach(fn func(R)) {
 	i.ts.ForEach(func(t T) {
 		fn(i.fn(t))
 	})
 }
 
-func (i MapIter[T, R]) ForEachWhile(fn func(R) bool) {
+func (i _MapIter[T, R]) ForEachWhile(fn func(R) bool) {
 	i.ts.ForEachWhile(func(t T) bool {
 		return fn(i.fn(t))
 	})
 }
 
-func (i MapIter[T, R]) Len() int {
+func (i _MapIter[T, R]) Len() int {
 	return i.ts.Len()
 }
 
-func (i MapIter[T, R]) Empty() bool {
+func (i _MapIter[T, R]) Empty() bool {
 	return i.ts.Empty()
 }
 
-type FilterIter[T any] struct {
+type _FilterIter[T any] struct {
 	ts Iterator[T]
 	fn func(T) bool
 }
 
-func (i FilterIter[T]) ForEach(fn func(T)) {
+func (i _FilterIter[T]) ForEach(fn func(T)) {
 	i.ts.ForEach(func(t T) {
 		if i.fn(t) {
 			fn(t)
@@ -60,7 +60,7 @@ func (i FilterIter[T]) ForEach(fn func(T)) {
 	})
 }
 
-func (i FilterIter[T]) ForEachWhile(fn func(T) bool) {
+func (i _FilterIter[T]) ForEachWhile(fn func(T) bool) {
 	i.ts.ForEachWhile(func(t T) bool {
 		if i.fn(t) {
 			return fn(t)
@@ -69,20 +69,20 @@ func (i FilterIter[T]) ForEachWhile(fn func(T) bool) {
 	})
 }
 
-func (i FilterIter[T]) Len() int {
+func (i _FilterIter[T]) Len() int {
 	return filterLen(i.ts.Len())
 }
 
-func (i FilterIter[T]) Empty() bool {
+func (i _FilterIter[T]) Empty() bool {
 	return i.ts.Empty()
 }
 
-type FilterMapIter[T, R any] struct {
+type _FilterMapIter[T, R any] struct {
 	ts Iterator[T]
 	fn func(T) Opt[R]
 }
 
-func (i FilterMapIter[T, R]) ForEach(fn func(R)) {
+func (i _FilterMapIter[T, R]) ForEach(fn func(R)) {
 	i.ts.ForEach(func(t T) {
 		if r, b := i.fn(t).D(); b {
 			fn(r)
@@ -90,7 +90,7 @@ func (i FilterMapIter[T, R]) ForEach(fn func(R)) {
 	})
 }
 
-func (i FilterMapIter[T, R]) ForEachWhile(fn func(R) bool) {
+func (i _FilterMapIter[T, R]) ForEachWhile(fn func(R) bool) {
 	i.ts.ForEachWhile(func(t T) bool {
 		if r, b := i.fn(t).D(); b {
 			return fn(r)
@@ -99,26 +99,26 @@ func (i FilterMapIter[T, R]) ForEachWhile(fn func(R) bool) {
 	})
 }
 
-func (i FilterMapIter[T, R]) Len() int {
+func (i _FilterMapIter[T, R]) Len() int {
 	return filterLen(i.ts.Len())
 }
 
-func (i FilterMapIter[T, R]) Empty() bool {
+func (i _FilterMapIter[T, R]) Empty() bool {
 	return i.ts.Empty()
 }
 
-type FlattenIter[T any, TS Iterator[T]] struct {
+type _FlattenIter[T any, TS Iterator[T]] struct {
 	tg    Iterator[TS]
 	total int
 }
 
-func (i FlattenIter[T, TS]) ForEach(fn func(T)) {
+func (i _FlattenIter[T, TS]) ForEach(fn func(T)) {
 	i.tg.ForEach(func(ts TS) {
 		ts.ForEach(fn)
 	})
 }
 
-func (i FlattenIter[T, TS]) ForEachWhile(fn func(T) bool) {
+func (i _FlattenIter[T, TS]) ForEachWhile(fn func(T) bool) {
 	i.tg.ForEachWhile(func(ts TS) bool {
 		b := true
 		ts.ForEachWhile(func(t T) bool {
@@ -129,26 +129,26 @@ func (i FlattenIter[T, TS]) ForEachWhile(fn func(T) bool) {
 	})
 }
 
-func (i FlattenIter[T, TS]) Len() int {
+func (i _FlattenIter[T, TS]) Len() int {
 	return i.total
 }
 
-func (i FlattenIter[T, TS]) Empty() bool {
+func (i _FlattenIter[T, TS]) Empty() bool {
 	return i.total == 0
 }
 
-type FlatMapIter[T, R any, RS Iterator[R]] struct {
+type _FlatMapIter[T, R any, RS Iterator[R]] struct {
 	ts Iterator[T]
 	fn func(T) RS
 }
 
-func (i FlatMapIter[T, R, RS]) ForEach(fn func(R)) {
+func (i _FlatMapIter[T, R, RS]) ForEach(fn func(R)) {
 	i.ts.ForEach(func(t T) {
 		i.fn(t).ForEach(fn)
 	})
 }
 
-func (i FlatMapIter[T, R, RS]) ForEachWhile(fn func(R) bool) {
+func (i _FlatMapIter[T, R, RS]) ForEachWhile(fn func(R) bool) {
 	i.ts.ForEachWhile(func(t T) bool {
 		b := true
 		i.fn(t).ForEachWhile(func(r R) bool {
@@ -159,28 +159,28 @@ func (i FlatMapIter[T, R, RS]) ForEachWhile(fn func(R) bool) {
 	})
 }
 
-func (i FlatMapIter[T, R, RS]) Len() int {
+func (i _FlatMapIter[T, R, RS]) Len() int {
 	return i.ts.Len()
 }
 
-func (i FlatMapIter[T, R, RS]) Empty() bool {
+func (i _FlatMapIter[T, R, RS]) Empty() bool {
 	return i.ts.Empty()
 }
 
 func (i Iter[T]) Map[R any](fn func(T) R) Iter[R] {
-	return Iter[R]{ts: MapIter[T, R]{ts: i.ts, fn: fn}}
+	return Iter[R]{ts: _MapIter[T, R]{ts: i.ts, fn: fn}}
 }
 
 func (i Iter[T]) Filter(fn func(T) bool) Iter[T] {
-	return Iter[T]{ts: FilterIter[T]{ts: i.ts, fn: fn}}
+	return Iter[T]{ts: _FilterIter[T]{ts: i.ts, fn: fn}}
 }
 
 func (i Iter[T]) FilterMap[R any](fn func(T) Opt[R]) Iter[R] {
-	return Iter[R]{ts: FilterMapIter[T, R]{ts: i.ts, fn: fn}}
+	return Iter[R]{ts: _FilterMapIter[T, R]{ts: i.ts, fn: fn}}
 }
 
 func (i Iter[T]) FlatMap[R any, RS Iterator[R]](fn func(T) RS) Iter[R] {
-	return Iter[R]{ts: FlatMapIter[T, R, RS]{ts: i.ts, fn: fn}}
+	return Iter[R]{ts: _FlatMapIter[T, R, RS]{ts: i.ts, fn: fn}}
 }
 
 func (i Iter[T]) FlatMapEager[R any, RS Iterator[R]](fn func(T) RS) Iter[R] {
@@ -191,7 +191,7 @@ func (i Iter[T]) FlatMapEager[R any, RS Iterator[R]](fn func(T) RS) Iter[R] {
 		total += rs.Len()
 		rg.Append(rs)
 	})
-	return Iter[R]{ts: FlattenIter[R, RS]{tg: rg, total: total}}
+	return Iter[R]{ts: _FlattenIter[R, RS]{tg: rg, total: total}}
 }
 
 func (i Iter[T]) Flatten[RS Iterator[R], R any]() Iter[R] {
@@ -200,7 +200,7 @@ func (i Iter[T]) Flatten[RS Iterator[R], R any]() Iter[R] {
 		rg.ForEach(func(rs RS) {
 			total += rs.Len()
 		})
-		return Iter[R]{ts: FlattenIter[R, RS]{tg: rg, total: total}}
+		return Iter[R]{ts: _FlattenIter[R, RS]{tg: rg, total: total}}
 	}
 	panic(fmt.Errorf("Iter.Flatten: Iter[%T] element is not %T", *new(T), *new(RS)))
 }
@@ -218,4 +218,10 @@ func (i Iter[T]) Reduce[R any](seed R, fn func(R, T) R) R {
 		seed = fn(seed, t)
 	})
 	return seed
+}
+
+func KeyOf[K comparable, V any](fn func(V) K) func(V) KV[K, V] {
+	return func(v V) KV[K, V] {
+		return KV_(fn(v), v)
+	}
 }
