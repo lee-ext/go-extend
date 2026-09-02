@@ -5,9 +5,10 @@ import (
 	"fmt"
 )
 
-const (
-	_ResOkMsg   = "result is ok"
-	_ResNoneMsg = "result is none"
+var (
+	_resOkErr      = errors.New("result is ok")
+	_resNoneErr    = errors.New("result is none")
+	_resDefaultErr = errors.New("result is err")
 )
 
 type Res[T any] struct {
@@ -41,7 +42,7 @@ func (r Res[T]) Get() T {
 	case error:
 		panic(v)
 	case nil:
-		panic(errors.New(_ResNoneMsg))
+		panic(_resNoneErr)
 	default:
 		panic(fmt.Errorf("unknown type: %#v", v))
 	}
@@ -77,11 +78,11 @@ func (r Res[T]) GetElse(fn func() T) T {
 func (r Res[T]) Err() error {
 	switch v := r.v.(type) {
 	case T:
-		return errors.New(_ResOkMsg)
+		return _resOkErr
 	case error:
 		return v
 	default:
-		return errors.New(_ResNoneMsg)
+		return _resNoneErr
 	}
 }
 
@@ -99,7 +100,7 @@ func (r Res[T]) ErrCall(fn func(err error)) Res[T] {
 	case error:
 		fn(v)
 	default:
-		fn(errors.New(_ResNoneMsg))
+		fn(_resNoneErr)
 	}
 	return r
 }
@@ -111,7 +112,7 @@ func (r Res[T]) D() (T, error) {
 	case error:
 		return *new(T), v
 	default:
-		return *new(T), errors.New(_ResNoneMsg)
+		return *new(T), _resNoneErr
 	}
 }
 
@@ -141,6 +142,9 @@ func ResOk[T any](t T) Res[T] {
 }
 
 func ResErr[T any](e error) Res[T] {
+	if e == nil {
+		e = _resDefaultErr
+	}
 	return Res[T]{e}
 }
 
@@ -160,7 +164,7 @@ func (r Res[T]) To[R any]() Res[R] {
 	if r.IsErr() {
 		return ResErr[R](r.Err())
 	}
-	panic(errors.New(_ResOkMsg))
+	panic(_resDefaultErr)
 }
 
 func ResTry[T any](fn func() T) (res Res[T]) {
