@@ -1,6 +1,7 @@
 package ext
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"iter"
@@ -20,6 +21,14 @@ type _DequePin[E any] struct {
 // Deque_ Create a Deque[E] with a specified capacity
 func Deque_[E any](cap_ int) Deque[E] {
 	return Deque[E]{&_DequePin[E]{make([]E, 0, cap_), 0, 0}}
+}
+
+func DequeOf[E any](es ...E) Deque[E] {
+	d := Deque_[E](len(es))
+	for _, e := range es {
+		d.PushBack(e)
+	}
+	return d
 }
 
 func (d Deque[E]) Iter() Iter[E] {
@@ -314,4 +323,19 @@ func (d Deque[E]) realIndex(index int) int {
 		index -= cap_
 	}
 	return index
+}
+
+// MarshalJSON Implement JSON serialization
+func (d Deque[E]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.ToVec())
+}
+
+// UnmarshalJSON Implement JSON deserialization
+func (d *Deque[E]) UnmarshalJSON(data []byte) error {
+	vec := Vec[E]{}
+	err := json.Unmarshal(data, &vec)
+	if err == nil {
+		*d = DequeOf[E](vec...)
+	}
+	return err
 }

@@ -168,10 +168,10 @@ func (s Set[E]) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON Implement JSON deserialization
 func (s *Set[E]) UnmarshalJSON(data []byte) error {
-	vec := new(Vec[E])
-	err := json.Unmarshal(data, vec)
+	vec := Vec[E]{}
+	err := json.Unmarshal(data, &vec)
 	if err == nil {
-		*s = SetOf[E](*vec...)
+		*s = SetOf[E](vec...)
 	}
 	return err
 }
