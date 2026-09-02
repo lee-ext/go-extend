@@ -124,17 +124,13 @@ func Res_[T any](t T, e error) Res[T] {
 }
 
 func ResOpt[T any](t T, b bool, e error) Res[T] {
-	if e == nil && b {
+	if e != nil {
+		return Res[T]{e}
+	}
+	if b {
 		return Res[T]{t}
 	}
-	return Res[T]{e}
-}
-
-func ResUnit(e error) Res[Unit] {
-	if e == nil {
-		return Res[Unit]{Unit{}}
-	}
-	return Res[Unit]{e}
+	return Res[T]{nil}
 }
 
 func ResOk[T any](t T) Res[T] {
