@@ -123,6 +123,13 @@ func Res_[T any](t T, e error) Res[T] {
 	return Res[T]{e}
 }
 
+func ResUnit(e error) Res[Unit] {
+	if e == nil {
+		return Res[Unit]{}
+	}
+	return Res[Unit]{e}
+}
+
 func ResOpt[T any](t T, b bool, e error) Res[T] {
 	if e != nil {
 		return Res[T]{e}
