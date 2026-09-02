@@ -125,7 +125,7 @@ func Res_[T any](t T, e error) Res[T] {
 
 func ResUnit(e error) Res[Unit] {
 	if e == nil {
-		return Res[Unit]{Unit{}}
+		return Res[Unit]{}
 	}
 	return Res[Unit]{e}
 }
