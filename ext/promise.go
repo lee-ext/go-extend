@@ -11,6 +11,7 @@ const (
 	_PromiseCompleting = 1
 	_PromiseCompleted  = 2
 	_PromiseCanceled   = -1
+	_PromiseTimedOut   = -2
 )
 
 type Promise[T any] struct {
@@ -31,18 +32,22 @@ func (p Promise[T]) Canceled() bool {
 	return p.status.Load() == _PromiseCanceled
 }
 
+func (p Promise[T]) TimedOut() bool {
+	return p.status.Load() == _PromiseTimedOut
+}
+
 func (p Promise[T]) Completed() bool {
 	return p.status.Load() == _PromiseCompleted
 }
 
 func (p Promise[T]) Done() bool {
 	s := p.status.Load()
-	return s == _PromiseCompleted || s == _PromiseCanceled
+	return s == _PromiseCompleted || s == _PromiseCanceled || s == _PromiseTimedOut
 }
 
 func (p Promise[T]) Timeout(d time.Duration) *time.Timer {
 	return time.AfterFunc(d, func() {
-		if p.status.CompareAndSwap(_PromisePending, _PromiseCanceled) {
+		if p.status.CompareAndSwap(_PromisePending, _PromiseTimedOut) {
 			p.waiter.Done()
 		}
 	})
@@ -66,6 +71,22 @@ func (p Promise[T]) Complete(v T) bool {
 	return false
 }
 
+func (p Promise[T]) CompleteAfter(d time.Duration, fn func() T) *time.Timer {
+	if fn == nil {
+		panic("promise: nil completion function")
+	}
+	return time.AfterFunc(d, func() {
+		if p.status.CompareAndSwap(
+			_PromisePending,
+			_PromiseCompleting,
+		) {
+			p.result = fn()
+			p.status.Store(_PromiseCompleted)
+			p.waiter.Done()
+		}
+	})
+}
+
 func (p Promise[T]) Await() Opt[T] {
 	p.waiter.Wait()
 	return p.TryGet()
@@ -83,30 +104,3 @@ func Promise_[T any]() Promise[T] {
 	p.waiter.Add(1)
 	return p
 }
-
-//func (p Promise[T]) Cancel() bool {
-//	if p.status.Load() == _PromisePending {
-//		p.locker.Lock()
-//		defer p.locker.Unlock()
-//		if p.status.Load() == _PromisePending {
-//			defer p.waiter.Done()
-//			p.status.Store(_PromiseCanceled)
-//			return true
-//		}
-//	}
-//	return false
-//}
-
-//func (p Promise[T]) Complete(t T) bool {
-//	if p.status.Load() == _PromisePending {
-//		p.locker.Lock()
-//		defer p.locker.Unlock()
-//		if p.status.Load() == _PromisePending {
-//			defer p.waiter.Done()
-//			p.result = t
-//			p.status.Store(_PromiseCompleted)
-//			return true
-//		}
-//	}
-//	return false
-//}
