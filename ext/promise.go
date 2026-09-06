@@ -10,8 +10,6 @@ const (
 	_PromisePending    = 0
 	_PromiseCompleting = 1
 	_PromiseCompleted  = 2
-	_PromiseCanceled   = -1
-	_PromiseTimedOut   = -2
 )
 
 type Promise[T any] struct {
@@ -28,37 +26,8 @@ func (p Promise[T]) Pending() bool {
 	return p.status.Load() == _PromisePending
 }
 
-func (p Promise[T]) Canceled() bool {
-	return p.status.Load() == _PromiseCanceled
-}
-
-func (p Promise[T]) TimedOut() bool {
-	return p.status.Load() == _PromiseTimedOut
-}
-
 func (p Promise[T]) Completed() bool {
 	return p.status.Load() == _PromiseCompleted
-}
-
-func (p Promise[T]) Done() bool {
-	s := p.status.Load()
-	return s == _PromiseCompleted || s == _PromiseCanceled || s == _PromiseTimedOut
-}
-
-func (p Promise[T]) Timeout(d time.Duration) *time.Timer {
-	return time.AfterFunc(d, func() {
-		if p.status.CompareAndSwap(_PromisePending, _PromiseTimedOut) {
-			p.waiter.Done()
-		}
-	})
-}
-
-func (p Promise[T]) Cancel() bool {
-	if p.status.CompareAndSwap(_PromisePending, _PromiseCanceled) {
-		p.waiter.Done()
-		return true
-	}
-	return false
 }
 
 func (p Promise[T]) Complete(v T) bool {
@@ -87,9 +56,9 @@ func (p Promise[T]) CompleteAfter(d time.Duration, fn func() T) *time.Timer {
 	})
 }
 
-func (p Promise[T]) Await() Opt[T] {
+func (p Promise[T]) Await() T {
 	p.waiter.Wait()
-	return p.TryGet()
+	return p.result
 }
 
 func (p Promise[T]) TryGet() Opt[T] {
