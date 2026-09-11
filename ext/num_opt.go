@@ -247,7 +247,7 @@ func (o OptF[T]) Get() T {
 	panic(errors.New("option is none"))
 }
 
-// Get_ 获取值 如果为none 则会返回初始值
+// Get_ if it's none, it will return the zero value
 func (o OptF[T]) Get_() T {
 	if o.IsSome() {
 		return o.get()
