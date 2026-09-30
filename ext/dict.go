@@ -132,3 +132,7 @@ func (d Dict[K, V]) AppendSelf(kv KV[K, V]) Dict[K, V] {
 	d[kv.K] = kv.V
 	return d
 }
+
+func (d Dict[K, V]) D() map[K]V {
+	return d
+}
