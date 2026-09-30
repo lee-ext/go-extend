@@ -275,3 +275,7 @@ func (v Vec[E]) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal([]E(v))
 }
+
+func (v Vec[E]) D() []E {
+	return v
+}

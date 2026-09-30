@@ -243,3 +243,7 @@ func (v CmpVec[E]) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal([]E(v))
 }
+
+func (v CmpVec[E]) D() []E {
+	return v
+}
