@@ -14,10 +14,14 @@ func (i Iter[T]) ForEachWhile(fn func(T) bool) {
 	i.ts.ForEachWhile(fn)
 }
 
+// Len returns the source's size hint. Filtering and flat mapping may change
+// the number of yielded elements, so this is not necessarily an exact count.
 func (i Iter[T]) Len() int {
 	return i.ts.Len()
 }
 
+// Empty reports whether the source is known to be empty without evaluating
+// lazy callbacks. A false result does not guarantee that any element is yielded.
 func (i Iter[T]) Empty() bool {
 	return i.ts.Empty()
 }
@@ -194,6 +198,8 @@ func (i Iter[T]) FlatMapEager[R any, RS Iterator[R]](fn func(T) RS) Iter[R] {
 	return Iter[R]{ts: _FlattenIter[R, RS]{tg: rg, total: total}}
 }
 
+// Flatten flattens nested iterators without caching; the source must be repeatable.
+// Do not use channel sources, including through pipelines; use FlatMap or FlatMapEager instead.
 func (i Iter[T]) Flatten[RS Iterator[R], R any]() Iter[R] {
 	if rg, b := any(i.ts).(Iterator[RS]); b {
 		total := 0

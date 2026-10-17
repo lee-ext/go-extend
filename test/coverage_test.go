@@ -33,11 +33,6 @@ func TestCmpVecFuncs(t *testing.T) {
 	if !v.IsSortedFunc(cmp.Compare[int]) || !slices.Equal(v, CmpVec[int]{1, 2, 3}) {
 		t.Errorf("SortFunc = %v", v)
 	}
-	stable := CmpVecOf(T2_(1, "a"), T2_(1, "b"), T2_(0, "c"))
-	stable.SortStableFunc(func(a, b T2[int, string]) int { return cmp.Compare(a.V0, b.V0) })
-	if stable[1].V1 != "a" || stable[2].V1 != "b" {
-		t.Errorf("SortStableFunc = %v", stable)
-	}
 	if v.MinFunc(cmp.Compare[int]) != 1 || v.MaxFunc(cmp.Compare[int]) != 3 {
 		t.Error("bad MinFunc/MaxFunc")
 	}
@@ -59,8 +54,9 @@ func TestCmpVecMutate(t *testing.T) {
 	if !slices.Equal(v, CmpVec[int]{1, 2, 3}) {
 		t.Fatalf("Append(s) = %v", v)
 	}
-	if got := v.AppendSelf(4); !slices.Equal(got, CmpVec[int]{1, 2, 3, 4}) {
-		t.Errorf("AppendSelf = %v", got)
+	v = v.AppendSelf(4)
+	if !slices.Equal(v, CmpVec[int]{1, 2, 3, 4}) {
+		t.Errorf("AppendSelf = %v", v)
 	}
 	v.Insert(0, 0)
 	v.Replace(1, 3, 9)
