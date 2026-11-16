@@ -22,6 +22,6 @@ func TestActor(t *testing.T) {
 	actor.Launch(func() {
 		p.Complete("hello actor")
 	})
-	println(p.Await().Get())
+	println(p.Await())
 	time.Sleep(time.Second)
 }

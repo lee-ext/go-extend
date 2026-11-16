@@ -23,6 +23,10 @@ func SetOf[E comparable](es ...E) Set[E] {
 	return s
 }
 
+func (s Set[E]) Iter() Iter[E] {
+	return Iter[E]{ts: s}
+}
+
 // ForEach Traverse the Set[E]
 func (s Set[E]) ForEach(fn func(E)) {
 	for e := range s {
@@ -164,10 +168,10 @@ func (s Set[E]) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON Implement JSON deserialization
 func (s *Set[E]) UnmarshalJSON(data []byte) error {
-	vec := new(Vec[E])
-	err := json.Unmarshal(data, vec)
+	vec := Vec[E]{}
+	err := json.Unmarshal(data, &vec)
 	if err == nil {
-		*s = SetOf[E](*vec...)
+		*s = SetOf[E](vec...)
 	}
 	return err
 }

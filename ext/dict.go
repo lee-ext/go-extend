@@ -36,6 +36,10 @@ func DictOf[K comparable, V any](kvs ...KV[K, V]) Dict[K, V] {
 	return m
 }
 
+func (d Dict[K, V]) Iter() Iter[KV[K, V]] {
+	return Iter[KV[K, V]]{ts: d}
+}
+
 // ForEach Traverse the Dict[K, V]
 func (d Dict[K, V]) ForEach(fn func(KV[K, V])) {
 	for k, v := range d {

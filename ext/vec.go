@@ -27,6 +27,10 @@ func VecOf[E any](es ...E) Vec[E] {
 	return es
 }
 
+func (v Vec[E]) Iter() Iter[E] {
+	return Iter[E]{ts: v}
+}
+
 func (v Vec[E]) ForEach(fn func(E)) {
 	for _, e := range v {
 		fn(e)
@@ -198,6 +202,10 @@ func (v Vec[E]) ToReverse() RevVec[E] {
 	return RevVec[E]{v}
 }
 
+func (v RevVec[E]) Iter() Iter[E] {
+	return Iter[E]{ts: v}
+}
+
 func (v RevVec[E]) ForEach(fn func(E)) {
 	for i := v.Len(); i > 0; {
 		i -= 1
@@ -232,6 +240,10 @@ type IdxVec[E any] struct {
 
 func (v Vec[E]) ToIndexed() IdxVec[E] {
 	return IdxVec[E]{v}
+}
+
+func (v IdxVec[E]) Iter() Iter[KV[int, E]] {
+	return Iter[KV[int, E]]{ts: v}
 }
 
 func (v IdxVec[E]) ForEach(fn func(KV[int, E])) {
